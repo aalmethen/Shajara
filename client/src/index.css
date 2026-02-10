@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy-900: #0f172a;
+  --color-navy-800: #1e293b;
+  --color-navy-700: #334155;
+  --color-navy-600: #475569;
+  --color-charcoal: #1a1a2e;
+  --color-gold-500: #d4a843;
+  --color-gold-400: #e0b85c;
+  --color-gold-600: #c9952a;
+  --color-gold-700: #a67c1e;
+  --font-family-kufi: 'Noto Kufi Arabic', sans-serif;
+  --font-family-amiri: 'Amiri', serif;
+}
+
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Kufi Arabic', sans-serif;
+  background-color: #0f172a;
+  color: #e2e8f0;
+  direction: rtl;
+  min-height: 100vh;
+}
+
+/* Scrollbar styling for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Nasab text uses Amiri font */
+.font-amiri {
+  font-family: 'Amiri', serif;
+}
+
+/* Tree node transitions */
+.tree-node {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.tree-node:hover {
+  filter: brightness(1.2);
+}
+
+/* Gold gradient text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #d4a843, #e0b85c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Subtle geometric pattern overlay */
+.pattern-overlay {
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(212, 168, 67, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(212, 168, 67, 0.03) 0%, transparent 50%);
+}

@@ -1,0 +1,17 @@
+{
+  "name": "shajara",
+  "version": "1.0.0",
+  "description": "شَجَرَة — Family Tree Platform for Arab families",
+  "private": true,
+  "workspaces": ["server", "client"],
+  "scripts": {
+    "dev:server": "npm run dev --workspace=server",
+    "dev:client": "npm run dev --workspace=client",
+    "migrate": "node server/db/migrate.js",
+    "seed": "node server/db/seed.js",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
