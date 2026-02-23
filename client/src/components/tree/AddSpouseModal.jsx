@@ -3,6 +3,7 @@ import Modal from '../ui/Modal';
 import Select from '../ui/Select';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
+import LinkPersonModal from './LinkPersonModal';
 
 export default function AddSpouseModal({
   isOpen,
@@ -20,6 +21,8 @@ export default function AddSpouseModal({
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showLinkSpouse, setShowLinkSpouse] = useState(false);
+  const [linkedSpouseName, setLinkedSpouseName] = useState('');
 
   // Reset form when modal opens or forPerson changes
   useEffect(() => {
@@ -32,6 +35,7 @@ export default function AddSpouseModal({
         status: 'married',
       });
       setError('');
+      setLinkedSpouseName('');
     }
   }, [isOpen, forPerson]);
 
@@ -48,6 +52,12 @@ export default function AddSpouseModal({
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'person_b_id') setLinkedSpouseName('');
+  };
+
+  const handleLinkSpouse = (person) => {
+    setFormData(prev => ({ ...prev, person_b_id: person.id }));
+    setLinkedSpouseName(`${person.first_name} ${person.family_name || ''}`.trim());
   };
 
   const handleSubmit = async (e) => {
@@ -73,50 +83,76 @@ export default function AddSpouseModal({
 
   if (!forPerson) return null;
 
+  const targetGender = forPerson.gender === 'male' ? 'female' : 'male';
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`إضافة ${forPerson.gender === 'male' ? 'زوجة' : 'زوج'} لـ ${forPerson.first_name}`}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm">
-            {error}
+    <>
+      <Modal isOpen={isOpen} onClose={onClose} title={`إضافة ${forPerson.gender === 'male' ? 'زوجة' : 'زوج'} لـ ${forPerson.first_name}`}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-1">
+            <Select
+              label={forPerson.gender === 'male' ? 'الزوجة' : 'الزوج'}
+              value={formData.person_b_id}
+              onChange={(e) => handleChange('person_b_id', e.target.value)}
+              options={spouseOptions}
+              placeholder="اختر..."
+            />
+            {linkedSpouseName && (
+              <p className="text-xs text-gold-500">
+                {forPerson.gender === 'male' ? 'مرتبطة' : 'مرتبط'}: {linkedSpouseName}
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={() => setShowLinkSpouse(true)}
+              className="text-xs text-gold-500/70 hover:text-gold-400 transition-colors cursor-pointer"
+            >
+              🔍 بحث في كل الأشجار
+            </button>
           </div>
-        )}
 
-        <Select
-          label={forPerson.gender === 'male' ? 'الزوجة' : 'الزوج'}
-          value={formData.person_b_id}
-          onChange={(e) => handleChange('person_b_id', e.target.value)}
-          options={spouseOptions}
-          placeholder="اختر..."
-        />
+          <Input
+            label="تاريخ الزواج"
+            value={formData.marriage_date}
+            onChange={(e) => handleChange('marriage_date', e.target.value)}
+            placeholder="مثال: 1980"
+            dir="ltr"
+          />
 
-        <Input
-          label="تاريخ الزواج"
-          value={formData.marriage_date}
-          onChange={(e) => handleChange('marriage_date', e.target.value)}
-          placeholder="مثال: 1980"
-          dir="ltr"
-        />
+          <Input
+            label="ترتيب الزواج"
+            type="number"
+            min="1"
+            max="4"
+            value={formData.marriage_order}
+            onChange={(e) => handleChange('marriage_order', e.target.value)}
+            dir="ltr"
+          />
 
-        <Input
-          label="ترتيب الزواج"
-          type="number"
-          min="1"
-          max="4"
-          value={formData.marriage_order}
-          onChange={(e) => handleChange('marriage_order', e.target.value)}
-          dir="ltr"
-        />
+          <div className="flex gap-3 pt-2">
+            <Button type="submit" disabled={loading || !formData.person_b_id}>
+              {loading ? 'جاري الإضافة...' : 'إضافة'}
+            </Button>
+            <Button variant="secondary" onClick={onClose}>
+              إلغاء
+            </Button>
+          </div>
+        </form>
+      </Modal>
 
-        <div className="flex gap-3 pt-2">
-          <Button type="submit" disabled={loading || !formData.person_b_id}>
-            {loading ? 'جاري الإضافة...' : 'إضافة'}
-          </Button>
-          <Button variant="secondary" onClick={onClose}>
-            إلغاء
-          </Button>
-        </div>
-      </form>
-    </Modal>
+      <LinkPersonModal
+        isOpen={showLinkSpouse}
+        onClose={() => setShowLinkSpouse(false)}
+        onSelect={handleLinkSpouse}
+        title={`بحث عن ${forPerson.gender === 'male' ? 'زوجة' : 'زوج'} في كل الأشجار`}
+        genderFilter={targetGender}
+      />
+    </>
   );
 }

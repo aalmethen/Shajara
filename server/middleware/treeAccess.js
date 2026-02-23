@@ -10,6 +10,12 @@ async function requireTreeAdmin(req, res, next) {
     return res.status(401).json({ error: 'غير مصرح' });
   }
 
+  // Global admin bypasses tree-level checks
+  if (req.user.isAdmin) {
+    req.treeRole = 'admin';
+    return next();
+  }
+
   try {
     const { rows } = await pool.query(
       `SELECT role FROM tree_members WHERE user_id = $1 AND family_tree_id = $2`,
@@ -32,6 +38,12 @@ async function requireTreeAdmin(req, res, next) {
 async function requireTreeAccess(req, res, next) {
   const treeId = req.params.treeId;
   const userId = req.user?.id;
+
+  // Global admin can access any tree
+  if (req.user?.isAdmin) {
+    req.treeRole = 'admin';
+    return next();
+  }
 
   try {
     // First check if tree exists
@@ -73,6 +85,7 @@ async function requireTreeAccess(req, res, next) {
 
 /**
  * Check if user can edit a specific person.
+ * Global admin can edit any person.
  * User can edit if they created the person, or are admin of any tree that reaches the person.
  * Expects req.params.id (personId) and req.user.id (userId).
  */
@@ -82,6 +95,11 @@ async function requirePersonEditAccess(req, res, next) {
 
   if (!userId) {
     return res.status(401).json({ error: 'غير مصرح' });
+  }
+
+  // Global admin can edit any person
+  if (req.user.isAdmin) {
+    return next();
   }
 
   try {

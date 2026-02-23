@@ -214,6 +214,24 @@ router.put('/:id', requireAuth, requirePersonEditAccess, async (req, res) => {
        id]
     );
 
+    // If this person is the root of the tree and now has a father, update root to the father
+    const updatedPerson = rows[0];
+    let newRootId = null;
+    if (updatedPerson.father_id && !oldRows[0].father_id) {
+      const { treeId } = req.params;
+      const { rows: treeRows } = await pool.query(
+        'SELECT id FROM family_trees WHERE id = $1 AND root_person_id = $2',
+        [treeId, id]
+      );
+      if (treeRows.length > 0) {
+        await pool.query(
+          'UPDATE family_trees SET root_person_id = $1 WHERE id = $2',
+          [updatedPerson.father_id, treeId]
+        );
+        newRootId = updatedPerson.father_id;
+      }
+    }
+
     await logAudit({
       familyTreeId: oldRows[0].home_tree_id,
       action: 'edit',
@@ -221,10 +239,10 @@ router.put('/:id', requireAuth, requirePersonEditAccess, async (req, res) => {
       entityId: id,
       changedBy: req.user.id,
       oldValue: oldRows[0],
-      newValue: rows[0],
+      newValue: updatedPerson,
     });
 
-    res.json({ person: rows[0] });
+    res.json({ person: updatedPerson, newRootId });
   } catch (err) {
     console.error('Update person error:', err);
     res.status(500).json({ error: 'خطأ في الخادم' });

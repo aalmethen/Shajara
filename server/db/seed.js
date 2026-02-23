@@ -9,21 +9,35 @@ async function seed() {
     await client.query('BEGIN');
 
     // 1. Create admin user
-    const userId = uuidv4();
+    const newUserId = uuidv4();
     const passwordHash = await bcrypt.hash('admin123', 10);
     await client.query(
       `INSERT INTO users (id, email, password_hash, name) VALUES ($1, $2, $3, $4)
        ON CONFLICT (email) DO NOTHING`,
-      [userId, 'admin@shajara.app', passwordHash, 'مدير النظام']
+      [newUserId, 'admin@shajara.app', passwordHash, 'مدير النظام']
     );
 
+    // Retrieve the actual user ID (may differ if user already existed)
+    const { rows: [existingUser] } = await client.query(
+      `SELECT id FROM users WHERE email = $1`,
+      ['admin@shajara.app']
+    );
+    const userId = existingUser.id;
+
     // 2. Create family tree
-    const treeId = uuidv4();
+    const newTreeId = uuidv4();
     await client.query(
       `INSERT INTO family_trees (id, name, description, slug, created_by, traversal_mode, depth_limit) VALUES ($1, $2, $3, $4, $5, $6, $7)
        ON CONFLICT (slug) DO NOTHING`,
-      [treeId, 'عائلة الفلاني', 'شجرة عائلة الفلاني - نموذج تجريبي', 'al-falani', userId, 'descendants', 20]
+      [newTreeId, 'عائلة الفلاني', 'شجرة عائلة الفلاني - نموذج تجريبي', 'al-falani', userId, 'descendants', 20]
     );
+
+    // Retrieve the actual tree ID (may differ if tree already existed)
+    const { rows: [existingTree] } = await client.query(
+      `SELECT id FROM family_trees WHERE slug = $1`,
+      ['al-falani']
+    );
+    const treeId = existingTree.id;
 
     // 3. Create tree member (admin)
     await client.query(

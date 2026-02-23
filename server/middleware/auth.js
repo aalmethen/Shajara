@@ -1,7 +1,23 @@
 const jwt = require('jsonwebtoken');
+const pool = require('../db/pool');
+
+// Helper to attach is_admin flag from DB
+async function attachAdminFlag(req) {
+  if (req.user && req.user.id) {
+    try {
+      const { rows } = await pool.query(
+        'SELECT is_admin FROM users WHERE id = $1',
+        [req.user.id]
+      );
+      req.user.isAdmin = rows.length > 0 && rows[0].is_admin === true;
+    } catch {
+      req.user.isAdmin = false;
+    }
+  }
+}
 
 // Required authentication — returns 401 if no valid token
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -13,6 +29,7 @@ function requireAuth(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = { id: decoded.userId, email: decoded.email };
+    await attachAdminFlag(req);
     next();
   } catch (err) {
     return res.status(401).json({ error: 'رمز غير صالح أو منتهي الصلاحية' });
@@ -20,7 +37,7 @@ function requireAuth(req, res, next) {
 }
 
 // Optional authentication — attaches user if token present, continues otherwise
-function optionalAuth(req, res, next) {
+async function optionalAuth(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -33,6 +50,7 @@ function optionalAuth(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = { id: decoded.userId, email: decoded.email };
+    await attachAdminFlag(req);
   } catch (err) {
     req.user = null;
   }

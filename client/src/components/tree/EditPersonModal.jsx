@@ -10,6 +10,7 @@ export default function EditPersonModal({
   onSubmit,
   person,
   persons,
+  spouses = [],
 }) {
   const [formData, setFormData] = useState({
     first_name: '',
@@ -53,18 +54,45 @@ export default function EditPersonModal({
     [persons, person]
   );
 
-  const femaleOptions = useMemo(() =>
-    persons
-      .filter(p => p.gender === 'female' && p.id !== person?.id)
+  // Mother options: only show wives/ex-wives of the selected father
+  const motherOptions = useMemo(() => {
+    if (!formData.father_id) {
+      // No father selected — show all females
+      return persons
+        .filter(p => p.gender === 'female' && p.id !== person?.id)
+        .map(p => ({
+          value: p.id,
+          label: `${p.first_name} ${p.family_name || ''}`.trim(),
+        }));
+    }
+    // Get IDs of women who are/were married to the selected father
+    const wifeIds = new Set(
+      spouses
+        .filter(s => s.person_a_id === formData.father_id || s.person_b_id === formData.father_id)
+        .map(s => s.person_a_id === formData.father_id ? s.person_b_id : s.person_a_id)
+    );
+    return persons
+      .filter(p => p.gender === 'female' && p.id !== person?.id && wifeIds.has(p.id))
       .map(p => ({
         value: p.id,
         label: `${p.first_name} ${p.family_name || ''}`.trim(),
-      })),
-    [persons, person]
-  );
+      }));
+  }, [persons, spouses, formData.father_id, person]);
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const next = { ...prev, [field]: value };
+      if (field === 'father_id') {
+        // Clear mother when father changes (wives list will change)
+        next.mother_id = '';
+        // Default family name to father's family name
+        const father = persons.find(p => p.id === value);
+        if (father?.family_name) {
+          next.family_name = father.family_name;
+        }
+      }
+      return next;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -155,8 +183,8 @@ export default function EditPersonModal({
           label="الأم"
           value={formData.mother_id}
           onChange={(e) => handleChange('mother_id', e.target.value)}
-          options={femaleOptions}
-          placeholder="اختر الأم (اختياري)"
+          options={motherOptions}
+          placeholder={formData.father_id ? 'اختر من زوجات الأب' : 'اختر الأم (اختياري)'}
         />
 
         <Input

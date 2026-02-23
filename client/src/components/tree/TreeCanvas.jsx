@@ -107,8 +107,17 @@ function SvgPersonNode({ x, y, person, isSelected, onClick }) {
 function SvgSpouseNode({ x, y, spouse, relationship, onClick }) {
   const isMale = spouse.gender === 'male';
   const isDeceased = spouse.status === 'deceased';
-  const w = 90;
-  const h = 38;
+
+  // Build display name with father's name
+  const connector = isMale ? 'بن' : 'بنت';
+  const fatherName = spouse.father_first_name;
+  const displayName = fatherName
+    ? `${spouse.first_name} ${connector} ${fatherName}`
+    : spouse.first_name;
+
+  const hasSubtext = relationship.marriage_order > 1;
+  const w = 130;
+  const h = 42;
   const rx = isMale ? 6 : 19;
 
   const borderColor = isMale ? 'rgba(212,168,67,0.35)' : 'rgba(244,114,182,0.35)';
@@ -134,17 +143,17 @@ function SvgSpouseNode({ x, y, spouse, relationship, onClick }) {
       />
       <text
         x={w / 2}
-        y={h / 2 - (relationship.marriage_order > 1 ? 4 : 0)}
+        y={h / 2 - (hasSubtext ? 4 : 0)}
         textAnchor="middle"
         dominantBaseline="central"
         fill={isDeceased ? '#6b7280' : '#d1d5db'}
-        fontSize="11"
+        fontSize="10"
         fontWeight="500"
         fontFamily="'Noto Kufi Arabic', sans-serif"
       >
-        {spouse.first_name}
+        {displayName}
       </text>
-      {relationship.marriage_order > 1 && (
+      {hasSubtext && (
         <text
           x={w / 2}
           y={h / 2 + 12}
@@ -235,9 +244,16 @@ export default function TreeCanvas({
     return () => { svg.on('.zoom', null); };
   }, [hierarchy]);
 
-  // Fit to screen
+  // Fit to screen only on initial load, root change, or lineage mode change — not on person edits
+  const fittedRef = useRef(false);
+  useEffect(() => {
+    fittedRef.current = false;
+  }, [rootPersonId, lineageMode]);
+
   useEffect(() => {
     if (!hierarchy || !svgRef.current || !zoomRef.current || !dimensions.width || !dimensions.height) return;
+    if (fittedRef.current) return;
+    fittedRef.current = true;
     const svg = d3.select(svgRef.current);
     const newTransform = fitToScreen(hierarchy, dimensions.width, dimensions.height);
     svg.transition().duration(750).call(zoomRef.current.transform, newTransform);
@@ -325,27 +341,36 @@ export default function TreeCanvas({
                 );
               })}
 
-              {/* Group labels ("من فاطمة") */}
+              {/* Group labels ("من فاطمة" or "أبناء فاطمة") */}
               {nodes.map((node) => {
                 const groups = node.data.childrenGroups;
-                if (!groups || groups.length <= 1 || !node.children) return null;
+                if (!groups || !node.children) return null;
+                const hasImported = groups.some(g => g.isImported);
+                // Show labels when multiple groups OR when there are imported children
+                if (groups.length <= 1 && !hasImported) return null;
                 return groups.map((group, gi) => {
                   const firstChild = node.children?.find(c =>
                     group.children.some(gc => gc.id === c.data.id)
                   );
                   if (!firstChild) return null;
+                  const label = group.isImported
+                    ? `أبناء ${group.parentName}`
+                    : `من ${group.parentName}`;
+                  const labelColor = group.isImported
+                    ? 'rgba(147,197,253,0.7)'   // blue tint for imported
+                    : 'rgba(212,168,67,0.6)';
                   return (
                     <text
                       key={`grp-${node.data.id}-${gi}`}
                       x={firstChild.x}
                       y={firstChild.y - 40}
                       textAnchor="middle"
-                      fill="rgba(212,168,67,0.6)"
+                      fill={labelColor}
                       fontSize="10"
                       fontWeight="500"
                       fontFamily="'Noto Kufi Arabic', sans-serif"
                     >
-                      من {group.parentName}
+                      {label}
                     </text>
                   );
                 });
@@ -357,7 +382,7 @@ export default function TreeCanvas({
                 const nodeSpouses = (spouseMap.get(person.id) || [])
                   .sort((a, b) => (a.relationship.marriage_order || 1) - (b.relationship.marriage_order || 1));
 
-                const spouseSpacing = 110;
+                const spouseSpacing = 150;
                 const elements = [];
 
                 // Main person node
@@ -440,7 +465,7 @@ export default function TreeCanvas({
 
                   // Connector line
                   const lineStartX = node.x - 60; // edge of person node
-                  const lineEndX = spouseX + 45;   // edge of spouse node
+                  const lineEndX = spouseX + 65;   // edge of spouse node (w=130, half=65)
                   elements.push(
                     <line
                       key={`conn-${person.id}-${sp.spouse.id}`}

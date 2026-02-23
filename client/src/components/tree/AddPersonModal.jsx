@@ -10,6 +10,7 @@ export default function AddPersonModal({
   onClose,
   onSubmit,
   persons,
+  spouses = [],
   defaultFatherId = null,
   defaultMotherId = null,
 }) {
@@ -34,9 +35,10 @@ export default function AddPersonModal({
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
+      const father = defaultFatherId ? persons.find(p => p.id === defaultFatherId) : null;
       setFormData({
         first_name: '',
-        family_name: '',
+        family_name: father?.family_name || '',
         gender: 'male',
         father_id: defaultFatherId || '',
         mother_id: defaultMotherId || '',
@@ -61,26 +63,62 @@ export default function AddPersonModal({
     [persons]
   );
 
-  const femaleOptions = useMemo(() =>
-    persons
-      .filter(p => p.gender === 'female')
+  // Mother options: only show wives/ex-wives of the selected father
+  const motherOptions = useMemo(() => {
+    if (!formData.father_id) {
+      // No father selected — show all females
+      return persons
+        .filter(p => p.gender === 'female')
+        .map(p => ({
+          value: p.id,
+          label: `${p.first_name} ${p.family_name || ''}`.trim(),
+        }));
+    }
+    // Get IDs of women who are/were married to the selected father
+    const wifeIds = new Set(
+      spouses
+        .filter(s => s.person_a_id === formData.father_id || s.person_b_id === formData.father_id)
+        .map(s => s.person_a_id === formData.father_id ? s.person_b_id : s.person_a_id)
+    );
+    return persons
+      .filter(p => p.gender === 'female' && wifeIds.has(p.id))
       .map(p => ({
         value: p.id,
         label: `${p.first_name} ${p.family_name || ''}`.trim(),
-      })),
-    [persons]
-  );
+      }));
+  }, [persons, spouses, formData.father_id]);
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const next = { ...prev, [field]: value };
+      if (field === 'father_id') {
+        // Clear mother when father changes (wives list will change)
+        next.mother_id = '';
+        // Default family name to father's family name
+        const father = persons.find(p => p.id === value);
+        if (father?.family_name) {
+          next.family_name = father.family_name;
+        }
+      }
+      return next;
+    });
     // Clear linked name if user changes dropdown selection
-    if (field === 'father_id') setLinkedFatherName('');
+    if (field === 'father_id') {
+      setLinkedFatherName('');
+      setLinkedMotherName('');
+    }
     if (field === 'mother_id') setLinkedMotherName('');
   };
 
   const handleLinkFather = (person) => {
-    setFormData(prev => ({ ...prev, father_id: person.id }));
+    setFormData(prev => ({
+      ...prev,
+      father_id: person.id,
+      mother_id: '',
+      family_name: person.family_name || prev.family_name,
+    }));
     setLinkedFatherName(`${person.first_name} ${person.family_name || ''}`.trim());
+    setLinkedMotherName('');
   };
 
   const handleLinkMother = (person) => {
@@ -192,8 +230,8 @@ export default function AddPersonModal({
               label="الأم"
               value={formData.mother_id}
               onChange={(e) => handleChange('mother_id', e.target.value)}
-              options={femaleOptions}
-              placeholder="اختر الأم (اختياري)"
+              options={motherOptions}
+              placeholder={formData.father_id ? 'اختر من زوجات الأب' : 'اختر الأم (اختياري)'}
             />
             {linkedMotherName && (
               <p className="text-xs text-gold-500">

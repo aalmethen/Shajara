@@ -293,6 +293,7 @@ export default function TreeView() {
         onClose={() => setShowAddPerson(false)}
         onSubmit={addPerson}
         persons={persons}
+        spouses={spouses}
         defaultFatherId={addPersonDefaults.father_id}
         defaultMotherId={addPersonDefaults.mother_id}
       />
@@ -319,6 +320,7 @@ export default function TreeView() {
         onSubmit={updatePerson}
         person={editingPerson}
         persons={persons}
+        spouses={spouses}
       />
 
       {/* Import Modal */}

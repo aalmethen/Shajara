@@ -45,8 +45,13 @@ export function useTreeData(slug) {
   const addPerson = async (data) => {
     if (!tree) return;
     const res = await personsAPI.create(tree.id, data);
-    setPersons(prev => [...prev, res.data.person]);
-    return res.data.person;
+    const newPerson = res.data.person;
+    setPersons(prev => [...prev, newPerson]);
+    // If tree had no root, this person was auto-set as root by the server
+    if (!rootPersonId && !data.father_id) {
+      setRootPersonId(newPerson.id);
+    }
+    return newPerson;
   };
 
   const updatePerson = async (id, data) => {
@@ -55,6 +60,11 @@ export function useTreeData(slug) {
     setPersons(prev => prev.map(p => p.id === id ? res.data.person : p));
     if (selectedPerson?.id === id) {
       setSelectedPerson(res.data.person);
+    }
+    // If server moved the root (e.g. root got a father), update and refetch
+    if (res.data.newRootId) {
+      setRootPersonId(res.data.newRootId);
+      fetchTree();
     }
     return res.data.person;
   };

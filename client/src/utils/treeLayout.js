@@ -97,6 +97,20 @@ function buildNode(person, personMap, spouseMap, mode, visited, depth, maxDepth 
     // Exception: if a woman is explicitly the root (depth 0), still show her children
     if (person.gender === 'male') {
       children = allPersons.filter(p => p.father_id === person.id);
+
+      // Also import children of spouses from their other marriages/trees
+      // These are children where a spouse is the mother but the father is someone else
+      for (const sp of spouses) {
+        if (sp.spouse.gender === 'female') {
+          const importedChildren = allPersons.filter(p =>
+            p.mother_id === sp.spouse.id &&
+            p.father_id !== person.id &&
+            !children.some(c => c.id === p.id) &&
+            !visited.has(p.id)
+          );
+          children = children.concat(importedChildren);
+        }
+      }
     } else if (depth === 0) {
       // Female root override: show children where she is mother
       children = allPersons.filter(p => p.mother_id === person.id);
@@ -107,6 +121,18 @@ function buildNode(person, personMap, spouseMap, mode, visited, depth, maxDepth 
     children = allPersons.filter(p =>
       p.father_id === person.id || p.mother_id === person.id
     );
+
+    // Also import children of spouses from their other marriages/trees
+    for (const sp of spouses) {
+      const importedChildren = allPersons.filter(p =>
+        (p.father_id === sp.spouse.id || p.mother_id === sp.spouse.id) &&
+        p.father_id !== person.id &&
+        p.mother_id !== person.id &&
+        !children.some(c => c.id === p.id) &&
+        !visited.has(p.id)
+      );
+      children = children.concat(importedChildren);
+    }
   }
 
   const hasChildren = children.length > 0;
@@ -153,13 +179,36 @@ function buildNode(person, personMap, spouseMap, mode, visited, depth, maxDepth 
  * Group children by the other parent
  * For a male: group by mother_id
  * For a female: group by father_id
+ * Imported children (from spouse's other marriages) are grouped separately
  */
 function groupChildrenByOtherParent(person, children, personMap) {
   const groups = new Map(); // otherParentId -> { parent, children }
 
   for (const child of children) {
-    const otherParentId = person.gender === 'male' ? child.mother_id : child.father_id;
-    const key = otherParentId || 'unknown';
+    let otherParentId;
+    let isImported = false;
+
+    if (person.gender === 'male') {
+      // For a male person, check if this child is actually his
+      if (child.father_id === person.id) {
+        otherParentId = child.mother_id;
+      } else {
+        // Imported child (from wife's other marriage) — group by father
+        otherParentId = child.father_id;
+        isImported = true;
+      }
+    } else {
+      if (child.mother_id === person.id) {
+        otherParentId = child.father_id;
+      } else {
+        // Imported child (from husband's other marriage) — group by mother
+        otherParentId = child.mother_id;
+        isImported = true;
+      }
+    }
+
+    // Use a composite key for imported children to keep them separate
+    const key = isImported ? `imported-${otherParentId || 'unknown'}` : (otherParentId || 'unknown');
 
     if (!groups.has(key)) {
       const otherParent = otherParentId ? personMap.get(otherParentId) : null;
@@ -167,6 +216,7 @@ function groupChildrenByOtherParent(person, children, personMap) {
         parentId: otherParentId,
         parentName: otherParent?.first_name || 'غير معروف',
         children: [],
+        isImported,
       });
     }
 
