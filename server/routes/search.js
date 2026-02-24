@@ -19,9 +19,11 @@ router.get('/search', requireAuth, async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT p.id, p.first_name, p.family_name, p.gender, p.status,
-              p.birth_date, p.death_date, p.home_tree_id,
+              p.birth_date, p.death_date, p.father_id, p.home_tree_id,
+              f.first_name AS father_first_name,
               ft.name AS home_tree_name, ft.slug AS home_tree_slug
        FROM persons p
+       LEFT JOIN persons f ON f.id = p.father_id
        LEFT JOIN family_trees ft ON ft.id = p.home_tree_id
        WHERE p.first_name ILIKE $1 OR p.family_name ILIKE $1
        ORDER BY p.first_name, p.family_name

@@ -66,7 +66,7 @@ router.post('/login', [
 
   try {
     const { rows } = await pool.query(
-      'SELECT id, email, name, password_hash FROM users WHERE email = $1', [email]
+      'SELECT id, email, name, password_hash, is_admin FROM users WHERE email = $1', [email]
     );
 
     if (rows.length === 0) {
@@ -86,7 +86,7 @@ router.post('/login', [
     );
 
     res.json({
-      user: { id: user.id, email: user.email, name: user.name },
+      user: { id: user.id, email: user.email, name: user.name, is_admin: user.is_admin },
       token,
     });
   } catch (err) {
@@ -99,7 +99,7 @@ router.post('/login', [
 router.get('/me', requireAuth, async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT id, email, name, created_at FROM users WHERE id = $1', [req.user.id]
+      'SELECT id, email, name, is_admin, created_at FROM users WHERE id = $1', [req.user.id]
     );
 
     if (rows.length === 0) {

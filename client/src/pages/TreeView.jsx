@@ -273,6 +273,7 @@ export default function TreeView() {
             persons={persons}
             spouses={spouses}
             isAdmin={isAdmin}
+            currentTree={tree}
             onClose={() => setSelectedPerson(null)}
             onViewFromHere={handleViewFromHere}
             onAddChild={handleAddChild}

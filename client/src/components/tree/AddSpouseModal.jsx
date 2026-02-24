@@ -4,6 +4,7 @@ import Select from '../ui/Select';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import LinkPersonModal from './LinkPersonModal';
+import { personFullName } from '../../utils/nasab';
 
 export default function AddSpouseModal({
   isOpen,
@@ -46,7 +47,7 @@ export default function AddSpouseModal({
       .filter(p => p.gender === targetGender && p.id !== forPerson?.id)
       .map(p => ({
         value: p.id,
-        label: `${p.first_name} ${p.family_name || ''}`.trim(),
+        label: personFullName(p, persons),
       }));
   }, [persons, forPerson]);
 
@@ -57,7 +58,7 @@ export default function AddSpouseModal({
 
   const handleLinkSpouse = (person) => {
     setFormData(prev => ({ ...prev, person_b_id: person.id }));
-    setLinkedSpouseName(`${person.first_name} ${person.family_name || ''}`.trim());
+    setLinkedSpouseName(personFullName(person, persons));
   };
 
   const handleSubmit = async (e) => {
@@ -87,7 +88,7 @@ export default function AddSpouseModal({
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} title={`إضافة ${forPerson.gender === 'male' ? 'زوجة' : 'زوج'} لـ ${forPerson.first_name}`}>
+      <Modal isOpen={isOpen} onClose={onClose} title={`إضافة ${forPerson.gender === 'male' ? 'زوجة' : 'زوج'} لـ ${personFullName(forPerson, persons)}`}>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm">

@@ -3,6 +3,7 @@ import Modal from '../ui/Modal';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import { personsAPI } from '../../api/client';
+import { personFullName } from '../../utils/nasab';
 
 /**
  * Modal for searching and selecting a person from the global graph.
@@ -101,7 +102,7 @@ export default function LinkPersonModal({
                 >
                   <div>
                     <span className="text-sm text-white">
-                      {person.first_name} {person.family_name || ''}
+                      {personFullName(person)}
                     </span>
                     <span className="text-xs text-gray-500 mr-2">
                       ({person.gender === 'male' ? 'ذكر' : 'أنثى'})

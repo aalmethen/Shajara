@@ -27,11 +27,13 @@ async function getTreeGraph(rootPersonId, mode = 'descendants', depthLimit = 20)
   const personIds = reachable.map(r => r.person_id);
   const maxDepthReached = Math.max(...reachable.map(r => r.depth));
 
-  // Fetch full person objects with father's first name
+  // Fetch full person objects with father's first name and home tree info
   const { rows: persons } = await pool.query(
-    `SELECT p.*, f.first_name as father_first_name
+    `SELECT p.*, f.first_name as father_first_name,
+            ht.name AS home_tree_name, ht.slug AS home_tree_slug
      FROM persons p
      LEFT JOIN persons f ON p.father_id = f.id
+     LEFT JOIN family_trees ht ON ht.id = p.home_tree_id
      WHERE p.id = ANY($1)
      ORDER BY p.created_at`,
     [personIds]

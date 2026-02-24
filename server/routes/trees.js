@@ -63,21 +63,39 @@ router.post('/', requireAuth, [
   }
 });
 
-// GET /api/trees — list my trees
+// GET /api/trees — list my trees (or all trees for global admin)
 router.get('/', requireAuth, async (req, res) => {
   try {
-    const { rows } = await pool.query(
-      `SELECT ft.*, tm.role,
-        COALESCE(
-          (SELECT COUNT(*) FROM get_tree_person_ids(ft.root_person_id, ft.traversal_mode, ft.depth_limit)),
-          0
-        ) as person_count
-       FROM family_trees ft
-       JOIN tree_members tm ON tm.family_tree_id = ft.id
-       WHERE tm.user_id = $1
-       ORDER BY ft.updated_at DESC`,
-      [req.user.id]
-    );
+    let rows;
+    if (req.user.isAdmin) {
+      // Global admin sees all trees
+      const result = await pool.query(
+        `SELECT ft.*, 'admin' as role,
+          u.name as owner_name,
+          COALESCE(
+            (SELECT COUNT(*) FROM get_tree_person_ids(ft.root_person_id, ft.traversal_mode, ft.depth_limit)),
+            0
+          ) as person_count
+         FROM family_trees ft
+         LEFT JOIN users u ON u.id = ft.created_by
+         ORDER BY ft.updated_at DESC`
+      );
+      rows = result.rows;
+    } else {
+      const result = await pool.query(
+        `SELECT ft.*, tm.role,
+          COALESCE(
+            (SELECT COUNT(*) FROM get_tree_person_ids(ft.root_person_id, ft.traversal_mode, ft.depth_limit)),
+            0
+          ) as person_count
+         FROM family_trees ft
+         JOIN tree_members tm ON tm.family_tree_id = ft.id
+         WHERE tm.user_id = $1
+         ORDER BY ft.updated_at DESC`,
+        [req.user.id]
+      );
+      rows = result.rows;
+    }
 
     res.json({ trees: rows });
   } catch (err) {
@@ -117,12 +135,16 @@ router.get('/:slug', optionalAuth, async (req, res) => {
     let isAdmin = false;
     let linkedPersonId = null;
     if (req.user) {
+      // Global admin has full access to all trees
+      if (req.user.isAdmin) {
+        isAdmin = true;
+      }
       const { rows: members } = await pool.query(
         `SELECT role, linked_person_id FROM tree_members WHERE user_id = $1 AND family_tree_id = $2`,
         [req.user.id, tree.id]
       );
       if (members.length > 0) {
-        isAdmin = members[0].role === 'admin';
+        isAdmin = isAdmin || members[0].role === 'admin';
         linkedPersonId = members[0].linked_person_id || null;
       }
     }
@@ -140,13 +162,15 @@ router.put('/:id', requireAuth, async (req, res) => {
   const userId = req.user.id;
 
   try {
-    // Check admin access
-    const { rows: members } = await pool.query(
-      `SELECT role FROM tree_members WHERE user_id = $1 AND family_tree_id = $2`,
-      [userId, id]
-    );
-    if (members.length === 0 || members[0].role !== 'admin') {
-      return res.status(403).json({ error: 'ليس لديك صلاحية التعديل' });
+    // Global admin bypasses membership check
+    if (!req.user.isAdmin) {
+      const { rows: members } = await pool.query(
+        `SELECT role FROM tree_members WHERE user_id = $1 AND family_tree_id = $2`,
+        [userId, id]
+      );
+      if (members.length === 0 || members[0].role !== 'admin') {
+        return res.status(403).json({ error: 'ليس لديك صلاحية التعديل' });
+      }
     }
 
     const { name, description, slug, root_person_id, traversal_mode, depth_limit } = req.body;
@@ -181,13 +205,15 @@ router.delete('/:id', requireAuth, async (req, res) => {
   const userId = req.user.id;
 
   try {
-    // Check admin access
-    const { rows: members } = await pool.query(
-      `SELECT role FROM tree_members WHERE user_id = $1 AND family_tree_id = $2`,
-      [userId, id]
-    );
-    if (members.length === 0 || members[0].role !== 'admin') {
-      return res.status(403).json({ error: 'ليس لديك صلاحية الحذف' });
+    // Global admin bypasses membership check
+    if (!req.user.isAdmin) {
+      const { rows: members } = await pool.query(
+        `SELECT role FROM tree_members WHERE user_id = $1 AND family_tree_id = $2`,
+        [userId, id]
+      );
+      if (members.length === 0 || members[0].role !== 'admin') {
+        return res.status(403).json({ error: 'ليس لديك صلاحية الحذف' });
+      }
     }
 
     // Must clear root_person_id before deleting (circular FK)

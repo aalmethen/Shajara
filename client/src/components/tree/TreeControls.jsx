@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { personFullName } from '../../utils/nasab';
 
 export default function TreeControls({
   persons,
@@ -32,7 +33,7 @@ export default function TreeControls({
       .filter(p => p.gender === 'male' || !p.father_id)
       .map(p => ({
         value: p.id,
-        label: `${p.first_name} ${p.family_name || ''}`.trim(),
+        label: personFullName(p, persons),
       }));
   }, [persons]);
 
@@ -129,7 +130,7 @@ export default function TreeControls({
                   className="w-full text-right px-3 py-2 text-sm text-gray-300 hover:bg-navy-600 hover:text-white transition-colors cursor-pointer flex items-center gap-2"
                 >
                   <span className="text-xs">{person.gender === 'male' ? '👨' : '👩'}</span>
-                  <span>{person.first_name} {person.family_name || ''}</span>
+                  <span>{personFullName(person, persons)}</span>
                 </button>
               ))}
             </div>

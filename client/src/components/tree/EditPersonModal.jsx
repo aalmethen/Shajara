@@ -3,6 +3,7 @@ import Modal from '../ui/Modal';
 import Input from '../ui/Input';
 import Select from '../ui/Select';
 import Button from '../ui/Button';
+import { personFullName } from '../../utils/nasab';
 
 export default function EditPersonModal({
   isOpen,
@@ -49,7 +50,7 @@ export default function EditPersonModal({
       .filter(p => p.gender === 'male' && p.id !== person?.id)
       .map(p => ({
         value: p.id,
-        label: `${p.first_name} ${p.family_name || ''}`.trim(),
+        label: personFullName(p, persons),
       })),
     [persons, person]
   );
@@ -62,7 +63,7 @@ export default function EditPersonModal({
         .filter(p => p.gender === 'female' && p.id !== person?.id)
         .map(p => ({
           value: p.id,
-          label: `${p.first_name} ${p.family_name || ''}`.trim(),
+          label: personFullName(p, persons),
         }));
     }
     // Get IDs of women who are/were married to the selected father
@@ -75,7 +76,7 @@ export default function EditPersonModal({
       .filter(p => p.gender === 'female' && p.id !== person?.id && wifeIds.has(p.id))
       .map(p => ({
         value: p.id,
-        label: `${p.first_name} ${p.family_name || ''}`.trim(),
+        label: personFullName(p, persons),
       }));
   }, [persons, spouses, formData.father_id, person]);
 
@@ -119,7 +120,7 @@ export default function EditPersonModal({
   if (!person) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`تعديل: ${person.first_name}`} maxWidth="max-w-md">
+    <Modal isOpen={isOpen} onClose={onClose} title={`تعديل: ${personFullName(person, persons)}`} maxWidth="max-w-md">
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm">

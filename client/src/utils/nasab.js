@@ -1,4 +1,41 @@
 /**
+ * Get the full display name for a person: first_name + بن/بنت father + family_name
+ * Used in dropdowns, search results, and everywhere a person is looked up.
+ *
+ * @param {Object} person - The person object
+ * @param {Array|Map} personsOrMap - All persons array, or a Map of id->person
+ * @returns {string} e.g. "أحمد بن محمد الفلاني"
+ */
+export function personFullName(person, personsOrMap) {
+  if (!person) return '';
+
+  const parts = [person.first_name];
+
+  // Resolve father's first name
+  let fatherFirstName = person.father_first_name; // may already be joined from server
+  if (!fatherFirstName && person.father_id && personsOrMap) {
+    const personMap = personsOrMap instanceof Map
+      ? personsOrMap
+      : new Map(personsOrMap.map(p => [p.id, p]));
+    const father = personMap.get(person.father_id);
+    if (father) {
+      fatherFirstName = father.first_name;
+    }
+  }
+
+  if (fatherFirstName) {
+    const connector = person.gender === 'male' ? 'بن' : 'بنت';
+    parts.push(connector, fatherFirstName);
+  }
+
+  if (person.family_name) {
+    parts.push(person.family_name);
+  }
+
+  return parts.join(' ');
+}
+
+/**
  * Generate nasab (النسب) string from a person and their ancestors
  * Traverses the father_id chain upward
  *

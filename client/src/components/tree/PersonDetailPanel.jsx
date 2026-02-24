@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { generateNasab } from '../../utils/nasab';
+import { Link } from 'react-router-dom';
+import { generateNasab, personFullName } from '../../utils/nasab';
 import Button from '../ui/Button';
 
 export default function PersonDetailPanel({
@@ -7,6 +8,7 @@ export default function PersonDetailPanel({
   persons,
   spouses,
   isAdmin,
+  currentTree,
   onClose,
   onViewFromHere,
   onAddChild,
@@ -97,7 +99,7 @@ export default function PersonDetailPanel({
             {person.gender === 'male' ? '👨' : '👩'}
           </div>
           <h3 className="text-xl font-bold text-white">
-            {person.first_name} {person.family_name || ''}
+            {personFullName(person, persons)}
           </h3>
 
           {/* Status badge */}
@@ -109,6 +111,19 @@ export default function PersonDetailPanel({
           >
             {person.status === 'deceased' ? 'متوفى' : 'على قيد الحياة'}
           </span>
+
+          {/* Link to original tree if person belongs to another tree */}
+          {person.home_tree_id && currentTree && person.home_tree_id !== currentTree.id && person.home_tree_slug && (
+            <Link
+              to={`/tree/${person.home_tree_slug}`}
+              className="inline-flex items-center gap-1.5 mt-2 mr-2 text-xs px-3 py-1 rounded-full bg-blue-900/30 text-blue-400 border border-blue-500/30 hover:bg-blue-900/50 hover:border-blue-500/50 transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              {person.home_tree_name || 'الشجرة الأصلية'}
+            </Link>
+          )}
         </div>
 
         {/* Nasab */}
@@ -156,7 +171,7 @@ export default function PersonDetailPanel({
                   className="w-full text-right bg-navy-900 rounded-lg p-3 border border-navy-700 hover:border-gold-500/40 transition-colors cursor-pointer"
                 >
                   <span className="text-xs text-gray-500">الأب:</span>
-                  <span className="text-sm text-white mr-2">{father.first_name} {father.family_name || ''}</span>
+                  <span className="text-sm text-white mr-2">{personFullName(father, persons)}</span>
                 </button>
               )}
               {mother && (
@@ -165,7 +180,7 @@ export default function PersonDetailPanel({
                   className="w-full text-right bg-navy-900 rounded-lg p-3 border border-navy-700 hover:border-pink-400/40 transition-colors cursor-pointer"
                 >
                   <span className="text-xs text-gray-500">الأم:</span>
-                  <span className="text-sm text-white mr-2">{mother.first_name} {mother.family_name || ''}</span>
+                  <span className="text-sm text-white mr-2">{personFullName(mother, persons)}</span>
                 </button>
               )}
             </div>
@@ -182,7 +197,7 @@ export default function PersonDetailPanel({
               {personSpouses.map(({ spouse, ...s }) => (
                 <div key={s.id} className="bg-navy-900 rounded-lg p-3 border border-navy-700">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white">{spouse.first_name} {spouse.family_name || ''}</span>
+                    <span className="text-sm text-white">{personFullName(spouse, persons)}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-gray-500">
                         {s.status === 'married' ? 'متزوجان' : s.status === 'divorced' ? 'مطلقان' : 'أرملة'}
@@ -190,7 +205,7 @@ export default function PersonDetailPanel({
                       {isAdmin && (
                         <button
                           onClick={() => {
-                            if (window.confirm(`هل أنت متأكد من حذف علاقة الزواج مع "${spouse.first_name}"؟`)) {
+                            if (window.confirm(`هل أنت متأكد من حذف علاقة الزواج مع "${personFullName(spouse, persons)}"؟`)) {
                               onDeleteSpouse?.(s.id);
                             }
                           }}
@@ -203,6 +218,17 @@ export default function PersonDetailPanel({
                   </div>
                   {s.marriage_date && (
                     <div className="text-xs text-gray-500 mt-1">الزواج: {s.marriage_date}</div>
+                  )}
+                  {spouse.home_tree_id && currentTree && spouse.home_tree_id !== currentTree.id && spouse.home_tree_slug && (
+                    <Link
+                      to={`/tree/${spouse.home_tree_slug}`}
+                      className="inline-flex items-center gap-1 mt-2 text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                    >
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                      عرض في {spouse.home_tree_name || 'شجرتها'}
+                    </Link>
                   )}
                 </div>
               ))}
@@ -230,7 +256,7 @@ export default function PersonDetailPanel({
                           : 'bg-navy-900 border-pink-400/30 text-gray-300 hover:border-pink-400/60'
                         }`}
                     >
-                      {child.first_name}
+                      {personFullName(child, persons)}
                     </button>
                   ))}
                 </div>
@@ -302,7 +328,7 @@ export default function PersonDetailPanel({
                 size="sm"
                 className="w-full text-red-400 hover:text-red-300"
                 onClick={() => {
-                  if (window.confirm(`هل أنت متأكد من حذف "${person.first_name}"؟ لا يمكن التراجع عن هذا الإجراء.`)) {
+                  if (window.confirm(`هل أنت متأكد من حذف "${personFullName(person, persons)}"؟ لا يمكن التراجع عن هذا الإجراء.`)) {
                     onDelete?.(person.id);
                   }
                 }}

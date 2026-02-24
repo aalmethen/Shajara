@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 import { treesAPI } from '../../api/client';
+import { personFullName } from '../../utils/nasab';
 
 export default function RelationshipModal({
   isOpen,
@@ -86,7 +87,7 @@ export default function RelationshipModal({
 
   const getPersonName = (id) => {
     const p = persons.find(p => p.id === id);
-    return p ? `${p.first_name} ${p.family_name || ''}`.trim() : '';
+    return p ? personFullName(p, persons) : '';
   };
 
   const getEdgeLabel = (edge) => {
@@ -122,7 +123,7 @@ export default function RelationshipModal({
             <option value="">اختر شخصاً...</option>
             {filteredFromPersons.map(p => (
               <option key={p.id} value={p.id}>
-                {p.gender === 'male' ? '👨' : '👩'} {p.first_name} {p.family_name || ''}
+                {p.gender === 'male' ? '👨' : '👩'} {personFullName(p, persons)}
               </option>
             ))}
           </select>
@@ -154,7 +155,7 @@ export default function RelationshipModal({
             <option value="">اختر شخصاً...</option>
             {filteredToPersons.map(p => (
               <option key={p.id} value={p.id}>
-                {p.gender === 'male' ? '👨' : '👩'} {p.first_name} {p.family_name || ''}
+                {p.gender === 'male' ? '👨' : '👩'} {personFullName(p, persons)}
               </option>
             ))}
           </select>
@@ -196,7 +197,7 @@ export default function RelationshipModal({
               )}
               {result.commonAncestor && (
                 <p className="text-xs text-gray-500 mt-2">
-                  الجد المشترك: <span className="text-gold-500">{result.commonAncestor.first_name} {result.commonAncestor.family_name || ''}</span>
+                  الجد المشترك: <span className="text-gold-500">{personFullName(result.commonAncestor, persons)}</span>
                 </p>
               )}
             </div>
@@ -225,7 +226,7 @@ export default function RelationshipModal({
                         <span className="ml-1">
                           {step.person?.gender === 'male' ? '👨' : '👩'}
                         </span>
-                        {step.person?.first_name || '—'} {step.person?.family_name || ''}
+                        {step.person ? personFullName(step.person, persons) : '—'}
                       </div>
                     </div>
                   ))}

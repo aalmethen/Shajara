@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { treesAPI } from '../api/client';
+import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -16,6 +17,8 @@ export default function Dashboard() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isGlobalAdmin = user?.is_admin;
 
   useEffect(() => {
     fetchTrees();
@@ -62,8 +65,12 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-white">شجراتي</h1>
-            <p className="text-gray-500 text-sm mt-1">إدارة شجرات العائلة الخاصة بك</p>
+            <h1 className="text-2xl font-bold text-white">
+              {isGlobalAdmin ? 'كل الشجرات' : 'شجراتي'}
+            </h1>
+            <p className="text-gray-500 text-sm mt-1">
+              {isGlobalAdmin ? 'إدارة جميع شجرات العائلة' : 'إدارة شجرات العائلة الخاصة بك'}
+            </p>
           </div>
           <Button onClick={() => setShowCreateModal(true)}>
             + إنشاء شجرة جديدة
@@ -108,6 +115,12 @@ export default function Dashboard() {
                   <span>{tree.person_count || 0} شخص</span>
                   <span>{new Date(tree.created_at).toLocaleDateString('ar-SA')}</span>
                 </div>
+
+                {isGlobalAdmin && tree.owner_name && (
+                  <div className="text-xs text-gray-600 mt-2">
+                    المالك: {tree.owner_name}
+                  </div>
+                )}
 
                 <div className="mt-3 pt-3 border-t border-navy-700">
                   <span className="text-xs text-gray-600 font-mono" dir="ltr">

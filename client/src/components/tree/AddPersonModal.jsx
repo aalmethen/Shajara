@@ -4,6 +4,7 @@ import Input from '../ui/Input';
 import Select from '../ui/Select';
 import Button from '../ui/Button';
 import LinkPersonModal from './LinkPersonModal';
+import { personFullName } from '../../utils/nasab';
 
 export default function AddPersonModal({
   isOpen,
@@ -58,7 +59,7 @@ export default function AddPersonModal({
       .filter(p => p.gender === 'male')
       .map(p => ({
         value: p.id,
-        label: `${p.first_name} ${p.family_name || ''}`.trim(),
+        label: personFullName(p, persons),
       })),
     [persons]
   );
@@ -71,7 +72,7 @@ export default function AddPersonModal({
         .filter(p => p.gender === 'female')
         .map(p => ({
           value: p.id,
-          label: `${p.first_name} ${p.family_name || ''}`.trim(),
+          label: personFullName(p, persons),
         }));
     }
     // Get IDs of women who are/were married to the selected father
@@ -84,7 +85,7 @@ export default function AddPersonModal({
       .filter(p => p.gender === 'female' && wifeIds.has(p.id))
       .map(p => ({
         value: p.id,
-        label: `${p.first_name} ${p.family_name || ''}`.trim(),
+        label: personFullName(p, persons),
       }));
   }, [persons, spouses, formData.father_id]);
 
@@ -117,13 +118,13 @@ export default function AddPersonModal({
       mother_id: '',
       family_name: person.family_name || prev.family_name,
     }));
-    setLinkedFatherName(`${person.first_name} ${person.family_name || ''}`.trim());
+    setLinkedFatherName(personFullName(person, persons));
     setLinkedMotherName('');
   };
 
   const handleLinkMother = (person) => {
     setFormData(prev => ({ ...prev, mother_id: person.id }));
-    setLinkedMotherName(`${person.first_name} ${person.family_name || ''}`.trim());
+    setLinkedMotherName(personFullName(person, persons));
   };
 
   const handleSubmit = async (e) => {
