@@ -1,5 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://shajara-i1nh.onrender.com/api/$1" }
+    { "source": "/api/:path*", "destination": "https://shajara-i1nh.onrender.com/api/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
