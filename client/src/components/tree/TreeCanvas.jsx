@@ -6,19 +6,19 @@ import { buildHierarchy, fitToScreen } from '../../utils/treeLayout';
 function SvgPersonNode({ x, y, person, isSelected, onClick }) {
   const isMale = person.gender === 'male';
   const isDeceased = person.status === 'deceased';
-  const w = 120;
-  const h = 50;
-  const rx = isMale ? 8 : 25;
+  const w = 130;
+  const h = 54;
+  const rx = isMale ? 10 : 27;
 
   const birthYear = person.birth_date?.match(/\d{4}/)?.[0] || '';
   const deathYear = person.death_date?.match(/\d{4}/)?.[0] || '';
   const dateStr = birthYear && deathYear ? `${birthYear} - ${deathYear}` : birthYear || '';
 
   const borderColor = isSelected
-    ? (isMale ? '#d4a843' : '#f472b6')
-    : (isMale ? 'rgba(212,168,67,0.5)' : 'rgba(244,114,182,0.5)');
-  const fillColor = '#1e293b';
-  const opacity = isDeceased ? 0.6 : 1;
+    ? (isMale ? '#b8860b' : '#d63384')
+    : (isMale ? '#996f0a' : '#c2185b');
+  const fillColor = isMale ? '#fdf8ed' : '#fdf2f8';
+  const opacity = isDeceased ? 0.7 : 1;
 
   return (
     <g
@@ -30,17 +30,28 @@ function SvgPersonNode({ x, y, person, isSelected, onClick }) {
       {/* Selection glow */}
       {isSelected && (
         <rect
-          x={-3}
-          y={-3}
-          width={w + 6}
-          height={h + 6}
-          rx={rx + 2}
-          ry={rx + 2}
+          x={-4}
+          y={-4}
+          width={w + 8}
+          height={h + 8}
+          rx={rx + 3}
+          ry={rx + 3}
           fill="none"
-          stroke={isMale ? 'rgba(212,168,67,0.3)' : 'rgba(244,114,182,0.3)'}
-          strokeWidth={3}
+          stroke={isMale ? 'rgba(184,134,11,0.4)' : 'rgba(214,51,132,0.4)'}
+          strokeWidth={4}
         />
       )}
+
+      {/* Drop shadow */}
+      <rect
+        x={2}
+        y={2}
+        width={w}
+        height={h}
+        rx={rx}
+        ry={rx}
+        fill="rgba(0,0,0,0.08)"
+      />
 
       {/* Background */}
       <rect
@@ -52,18 +63,18 @@ function SvgPersonNode({ x, y, person, isSelected, onClick }) {
         ry={rx}
         fill={fillColor}
         stroke={borderColor}
-        strokeWidth={isSelected ? 2.5 : 1.5}
+        strokeWidth={isSelected ? 2.5 : 2}
       />
 
       {/* Name */}
       <text
         x={w / 2}
-        y={h / 2 - (dateStr ? 4 : 0)}
+        y={h / 2 - (dateStr ? 5 : 0)}
         textAnchor="middle"
         dominantBaseline="central"
-        fill={isDeceased ? '#9ca3af' : '#ffffff'}
-        fontSize="13"
-        fontWeight="600"
+        fill={isDeceased ? '#6b7280' : '#1e293b'}
+        fontSize="14"
+        fontWeight="700"
         fontFamily="'Noto Kufi Arabic', sans-serif"
       >
         {person.first_name}
@@ -77,7 +88,7 @@ function SvgPersonNode({ x, y, person, isSelected, onClick }) {
           textAnchor="middle"
           dominantBaseline="central"
           fill="#6b7280"
-          fontSize="9"
+          fontSize="10"
           fontFamily="sans-serif"
           direction="ltr"
         >
@@ -92,7 +103,7 @@ function SvgPersonNode({ x, y, person, isSelected, onClick }) {
           y={h / 2 + 14}
           textAnchor="middle"
           dominantBaseline="central"
-          fill="#4b5563"
+          fill="#9ca3af"
           fontSize="9"
           fontFamily="'Noto Kufi Arabic', sans-serif"
         >
@@ -116,12 +127,13 @@ function SvgSpouseNode({ x, y, spouse, relationship, onClick }) {
     : spouse.first_name;
 
   const hasSubtext = relationship.marriage_order > 1;
-  const w = 130;
-  const h = 42;
-  const rx = isMale ? 6 : 19;
+  const w = 135;
+  const h = 44;
+  const rx = isMale ? 8 : 22;
 
-  const borderColor = isMale ? 'rgba(212,168,67,0.35)' : 'rgba(244,114,182,0.35)';
-  const opacity = isDeceased ? 0.55 : 1;
+  const borderColor = isMale ? 'rgba(153,111,10,0.6)' : 'rgba(194,24,91,0.6)';
+  const fillColor = isMale ? '#fef9f0' : '#fef2f7';
+  const opacity = isDeceased ? 0.65 : 1;
 
   return (
     <g
@@ -137,17 +149,18 @@ function SvgSpouseNode({ x, y, spouse, relationship, onClick }) {
         height={h}
         rx={rx}
         ry={rx}
-        fill="#1e293b"
+        fill={fillColor}
         stroke={borderColor}
-        strokeWidth={1}
+        strokeWidth={1.5}
+        strokeDasharray="6,3"
       />
       <text
         x={w / 2}
         y={h / 2 - (hasSubtext ? 4 : 0)}
         textAnchor="middle"
         dominantBaseline="central"
-        fill={isDeceased ? '#6b7280' : '#d1d5db'}
-        fontSize="10"
+        fill={isDeceased ? '#9ca3af' : '#374151'}
+        fontSize="11"
         fontWeight="500"
         fontFamily="'Noto Kufi Arabic', sans-serif"
       >
@@ -159,8 +172,8 @@ function SvgSpouseNode({ x, y, spouse, relationship, onClick }) {
           y={h / 2 + 12}
           textAnchor="middle"
           dominantBaseline="central"
-          fill="#4b5563"
-          fontSize="8"
+          fill="#9ca3af"
+          fontSize="9"
           fontFamily="'Noto Kufi Arabic', sans-serif"
         >
           الزوجة {relationship.marriage_order}
@@ -322,7 +335,7 @@ export default function TreeCanvas({
             ref={svgRef}
             width={dimensions.width || '100%'}
             height={dimensions.height || '100%'}
-            style={{ width: '100%', height: '100%', display: 'block', background: '#0f172a' }}
+            style={{ width: '100%', height: '100%', display: 'block', background: '#f8f9fb' }}
           >
             <g transform={`translate(${transform.x},${transform.y}) scale(${transform.k})`}>
               {/* Links */}
@@ -335,8 +348,8 @@ export default function TreeCanvas({
                     key={`l-${i}`}
                     d={`M ${sx} ${sy} C ${sx} ${my}, ${tx} ${my}, ${tx} ${ty}`}
                     fill="none"
-                    stroke="rgba(212,168,67,0.25)"
-                    strokeWidth={1.5}
+                    stroke="rgba(153,111,10,0.35)"
+                    strokeWidth={2}
                   />
                 );
               })}
@@ -357,8 +370,8 @@ export default function TreeCanvas({
                     ? `أبناء ${group.parentName}`
                     : `من ${group.parentName}`;
                   const labelColor = group.isImported
-                    ? 'rgba(147,197,253,0.7)'   // blue tint for imported
-                    : 'rgba(212,168,67,0.6)';
+                    ? 'rgba(37,99,235,0.8)'    // blue for imported
+                    : 'rgba(153,111,10,0.7)';  // gold
                   return (
                     <text
                       key={`grp-${node.data.id}-${gi}`}
@@ -366,8 +379,8 @@ export default function TreeCanvas({
                       y={firstChild.y - 40}
                       textAnchor="middle"
                       fill={labelColor}
-                      fontSize="10"
-                      fontWeight="500"
+                      fontSize="11"
+                      fontWeight="600"
                       fontFamily="'Noto Kufi Arabic', sans-serif"
                     >
                       {label}
@@ -411,17 +424,17 @@ export default function TreeCanvas({
                         transform={`translate(${node.x}, ${btnY})`}
                       >
                         <circle
-                          r={10}
-                          fill="rgba(212,168,67,0.1)"
-                          stroke="rgba(212,168,67,0.4)"
+                          r={12}
+                          fill="rgba(184,134,11,0.1)"
+                          stroke="rgba(184,134,11,0.4)"
                           strokeWidth={1.5}
                           strokeDasharray="3,2"
                         />
                         <text
                           textAnchor="middle"
                           dominantBaseline="central"
-                          fill="#d4a843"
-                          fontSize="12"
+                          fill="#996f0a"
+                          fontSize="13"
                           fontFamily="sans-serif"
                         >
                           ⋯
@@ -438,16 +451,16 @@ export default function TreeCanvas({
                         style={{ cursor: 'pointer' }}
                       >
                         <circle
-                          r={10}
-                          fill={isCollapsed ? 'rgba(212,168,67,0.15)' : 'rgba(30,41,59,0.9)'}
-                          stroke={isCollapsed ? '#d4a843' : 'rgba(212,168,67,0.3)'}
+                          r={12}
+                          fill={isCollapsed ? 'rgba(184,134,11,0.15)' : '#ffffff'}
+                          stroke={isCollapsed ? '#b8860b' : 'rgba(153,111,10,0.4)'}
                           strokeWidth={1.5}
                         />
                         <text
                           textAnchor="middle"
                           dominantBaseline="central"
-                          fill={isCollapsed ? '#d4a843' : '#6b7280'}
-                          fontSize="14"
+                          fill={isCollapsed ? '#b8860b' : '#6b7280'}
+                          fontSize="15"
                           fontWeight="bold"
                           fontFamily="sans-serif"
                         >
@@ -464,8 +477,8 @@ export default function TreeCanvas({
                   const spouseY = node.y;
 
                   // Connector line
-                  const lineStartX = node.x - 60; // edge of person node
-                  const lineEndX = spouseX + 65;   // edge of spouse node (w=130, half=65)
+                  const lineStartX = node.x - 65; // edge of person node
+                  const lineEndX = spouseX + 67;   // edge of spouse node
                   elements.push(
                     <line
                       key={`conn-${person.id}-${sp.spouse.id}`}
@@ -473,9 +486,9 @@ export default function TreeCanvas({
                       y1={spouseY}
                       x2={lineEndX}
                       y2={spouseY}
-                      stroke="rgba(212,168,67,0.3)"
-                      strokeWidth={1.5}
-                      strokeDasharray="4,3"
+                      stroke="rgba(153,111,10,0.35)"
+                      strokeWidth={2}
+                      strokeDasharray="6,4"
                     />
                   );
 
@@ -500,19 +513,19 @@ export default function TreeCanvas({
           <div className="absolute bottom-6 left-6 flex flex-col gap-2 z-20">
             <button
               onClick={handleZoomIn}
-              className="w-10 h-10 bg-navy-800 border border-navy-600 rounded-lg text-white hover:bg-navy-700 transition-colors flex items-center justify-center text-lg cursor-pointer"
+              className="w-10 h-10 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg cursor-pointer shadow-sm"
             >
               +
             </button>
             <button
               onClick={handleZoomOut}
-              className="w-10 h-10 bg-navy-800 border border-navy-600 rounded-lg text-white hover:bg-navy-700 transition-colors flex items-center justify-center text-lg cursor-pointer"
+              className="w-10 h-10 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-lg cursor-pointer shadow-sm"
             >
               −
             </button>
             <button
               onClick={handleFitToScreen}
-              className="w-10 h-10 bg-navy-800 border border-navy-600 rounded-lg text-white hover:bg-navy-700 transition-colors flex items-center justify-center text-xs cursor-pointer"
+              className="w-10 h-10 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center text-xs cursor-pointer shadow-sm"
               title="ملاءمة"
             >
               ⊞

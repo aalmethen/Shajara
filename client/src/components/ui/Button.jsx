@@ -8,13 +8,13 @@ export default function Button({
   onClick,
   ...props
 }) {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-navy-900 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
 
   const variants = {
-    primary: 'bg-gold-500 text-navy-900 hover:bg-gold-400 focus:ring-gold-500',
-    secondary: 'bg-navy-700 text-white hover:bg-navy-600 focus:ring-navy-600 border border-navy-600',
+    primary: 'bg-gold-500 text-white hover:bg-gold-400 focus:ring-gold-500',
+    secondary: 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-300 border border-gray-200',
     danger: 'bg-red-600 text-white hover:bg-red-500 focus:ring-red-500',
-    ghost: 'text-gray-300 hover:text-white hover:bg-navy-700 focus:ring-navy-600',
+    ghost: 'text-gray-600 hover:text-gray-800 hover:bg-gray-100 focus:ring-gray-300',
   };
 
   const sizes = {

@@ -24,10 +24,10 @@ export default function Home() {
           <h1 className="text-5xl md:text-6xl font-bold mb-4 font-amiri text-gold-gradient">
             شَجَرَة
           </h1>
-          <p className="text-xl text-gray-400 mb-2">
+          <p className="text-xl text-gray-600 mb-2">
             منصة شجرة العائلة
           </p>
-          <p className="text-gray-500 text-sm leading-relaxed max-w-lg mx-auto">
+          <p className="text-gray-400 text-sm leading-relaxed max-w-lg mx-auto">
             أنشئ شجرة عائلتك وشاركها مع أفراد العائلة. تدعم النسب العربي، تعدد الزوجات، ونسب الذكور
           </p>
         </div>
@@ -37,7 +37,7 @@ export default function Home() {
           {/* Create tree */}
           <Link
             to="/register"
-            className="w-full sm:w-auto bg-gold-500 text-navy-900 px-8 py-3 rounded-xl text-lg font-semibold hover:bg-gold-400 transition-all hover:shadow-lg hover:shadow-gold-500/20 text-center"
+            className="w-full sm:w-auto bg-gold-500 text-white px-8 py-3 rounded-xl text-lg font-semibold hover:bg-gold-400 transition-all hover:shadow-lg hover:shadow-gold-500/20 text-center"
           >
             أنشئ شجرة عائلتك
           </Link>
@@ -50,12 +50,12 @@ export default function Home() {
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
                 placeholder="رابط الشجرة..."
-                className="flex-1 px-4 py-3 bg-navy-800 border border-navy-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent text-sm"
+                className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent text-sm"
                 dir="ltr"
               />
               <button
                 type="submit"
-                className="px-4 py-3 bg-navy-700 border border-navy-600 rounded-xl text-gray-300 hover:text-white hover:bg-navy-600 transition-colors cursor-pointer"
+                className="px-4 py-3 bg-gray-100 border border-gray-300 rounded-xl text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-colors cursor-pointer"
               >
                 عرض
               </button>
@@ -68,17 +68,17 @@ export default function Home() {
           <div className="p-4">
             <div className="text-3xl mb-3">📜</div>
             <h3 className="text-gold-500 font-semibold mb-1">النسب التلقائي</h3>
-            <p className="text-gray-500 text-sm">يُبنى النسب تلقائياً من سلسلة الآباء</p>
+            <p className="text-gray-400 text-sm">يُبنى النسب تلقائياً من سلسلة الآباء</p>
           </div>
           <div className="p-4">
             <div className="text-3xl mb-3">🔗</div>
             <h3 className="text-gold-500 font-semibold mb-1">رابط مشاركة</h3>
-            <p className="text-gray-500 text-sm">شارك الشجرة بدون تسجيل دخول</p>
+            <p className="text-gray-400 text-sm">شارك الشجرة بدون تسجيل دخول</p>
           </div>
           <div className="p-4">
             <div className="text-3xl mb-3">👨‍👩‍👧‍👦</div>
             <h3 className="text-gold-500 font-semibold mb-1">تعدد الزوجات</h3>
-            <p className="text-gray-500 text-sm">دعم كامل لتعدد الزوجات وزواج الأقارب</p>
+            <p className="text-gray-400 text-sm">دعم كامل لتعدد الزوجات وزواج الأقارب</p>
           </div>
         </div>
       </div>

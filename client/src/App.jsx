@@ -12,7 +12,7 @@ function ProtectedRoute({ children }) {
   if (loading) {
     return (
       <div className="h-screen bg-navy-900 flex items-center justify-center">
-        <div className="text-gray-500 animate-pulse">جاري التحميل...</div>
+        <div className="text-gray-400 animate-pulse">جاري التحميل...</div>
       </div>
     );
   }

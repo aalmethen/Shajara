@@ -123,7 +123,7 @@ export default function EditPersonModal({
     <Modal isOpen={isOpen} onClose={onClose} title={`تعديل: ${personFullName(person, persons)}`} maxWidth="max-w-md">
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm">
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm">
             {error}
           </div>
         )}
@@ -145,7 +145,7 @@ export default function EditPersonModal({
 
         {/* Gender */}
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-300">الجنس</label>
+          <label className="block text-sm font-medium text-gray-700">الجنس</label>
           <div className="flex gap-4">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -156,7 +156,7 @@ export default function EditPersonModal({
                 onChange={(e) => handleChange('gender', e.target.value)}
                 className="accent-gold-500"
               />
-              <span className="text-sm text-gray-300">ذكر</span>
+              <span className="text-sm text-gray-600">ذكر</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -167,7 +167,7 @@ export default function EditPersonModal({
                 onChange={(e) => handleChange('gender', e.target.value)}
                 className="accent-gold-500"
               />
-              <span className="text-sm text-gray-300">أنثى</span>
+              <span className="text-sm text-gray-600">أنثى</span>
             </label>
           </div>
         </div>
@@ -198,7 +198,7 @@ export default function EditPersonModal({
 
         {/* Status */}
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-300">الحالة</label>
+          <label className="block text-sm font-medium text-gray-700">الحالة</label>
           <div className="flex gap-4">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -209,7 +209,7 @@ export default function EditPersonModal({
                 onChange={(e) => handleChange('status', e.target.value)}
                 className="accent-gold-500"
               />
-              <span className="text-sm text-gray-300">على قيد الحياة</span>
+              <span className="text-sm text-gray-600">على قيد الحياة</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -220,7 +220,7 @@ export default function EditPersonModal({
                 onChange={(e) => handleChange('status', e.target.value)}
                 className="accent-gold-500"
               />
-              <span className="text-sm text-gray-300">متوفى</span>
+              <span className="text-sm text-gray-600">متوفى</span>
             </label>
           </div>
         </div>

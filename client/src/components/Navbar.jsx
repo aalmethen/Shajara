@@ -11,7 +11,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-navy-800 border-b border-navy-700 sticky top-0 z-40">
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -26,14 +26,14 @@ export default function Navbar() {
               <>
                 <Link
                   to="/dashboard"
-                  className="text-gray-300 hover:text-white transition-colors text-sm"
+                  className="text-gray-600 hover:text-gray-900 transition-colors text-sm"
                 >
                   شجراتي
                 </Link>
-                <span className="text-gray-500 text-sm">{user?.name}</span>
+                <span className="text-gray-400 text-sm">{user?.name}</span>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-400 hover:text-red-400 transition-colors text-sm cursor-pointer"
+                  className="text-gray-400 hover:text-red-500 transition-colors text-sm cursor-pointer"
                 >
                   خروج
                 </button>
@@ -42,13 +42,13 @@ export default function Navbar() {
               <>
                 <Link
                   to="/login"
-                  className="text-gray-300 hover:text-white transition-colors text-sm"
+                  className="text-gray-600 hover:text-gray-900 transition-colors text-sm"
                 >
                   دخول
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-gold-500 text-navy-900 px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-gold-400 transition-colors"
+                  className="bg-gold-500 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-gold-400 transition-colors"
                 >
                   تسجيل
                 </Link>

@@ -70,7 +70,7 @@ export default function TreeView() {
       <div className="h-screen bg-navy-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-5xl mb-4 animate-pulse">🌳</div>
-          <p className="text-gray-500">جاري تحميل الشجرة...</p>
+          <p className="text-gray-400">جاري تحميل الشجرة...</p>
         </div>
       </div>
     );
@@ -82,7 +82,7 @@ export default function TreeView() {
       <div className="h-screen bg-navy-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-5xl mb-4">😞</div>
-          <p className="text-red-400 mb-4">{error}</p>
+          <p className="text-red-500 mb-4">{error}</p>
           <Link to="/" className="text-gold-500 hover:text-gold-400">
             العودة للرئيسية
           </Link>
@@ -165,15 +165,15 @@ export default function TreeView() {
   return (
     <div className="h-screen bg-navy-900 flex flex-col">
       {/* Top bar */}
-      <div className="h-12 bg-navy-800/90 backdrop-blur-sm border-b border-navy-700 flex items-center justify-between px-4 shrink-0 z-40">
+      <div className="h-12 bg-white/90 backdrop-blur-sm border-b border-gray-200 flex items-center justify-between px-4 shrink-0 z-40 shadow-sm">
         <div className="flex items-center gap-3">
           <Link to="/" className="text-gold-500 hover:text-gold-400 transition-colors text-lg">
             🌳
           </Link>
-          <h1 className="text-sm font-semibold text-white">
+          <h1 className="text-sm font-semibold text-gray-800">
             {tree?.name}
           </h1>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-gray-400">
             ({persons.length} شخص)
           </span>
         </div>
@@ -191,16 +191,16 @@ export default function TreeView() {
                   تصدير ↓
                 </Button>
                 {showExportMenu && (
-                  <div className="absolute top-full mt-1 left-0 bg-navy-700 border border-navy-600 rounded-lg shadow-xl overflow-hidden z-50 min-w-[140px]">
+                  <div className="absolute top-full mt-1 left-0 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-50 min-w-[140px]">
                     <button
                       onClick={() => handleExport('json')}
-                      className="w-full text-right px-4 py-2 text-sm text-gray-300 hover:bg-navy-600 hover:text-white transition-colors cursor-pointer"
+                      className="w-full text-right px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer"
                     >
                       تصدير JSON
                     </button>
                     <button
                       onClick={() => handleExport('csv')}
-                      className="w-full text-right px-4 py-2 text-sm text-gray-300 hover:bg-navy-600 hover:text-white transition-colors cursor-pointer"
+                      className="w-full text-right px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer"
                     >
                       تصدير CSV
                     </button>
@@ -229,7 +229,7 @@ export default function TreeView() {
           )}
           <Link
             to={isAdmin ? '/dashboard' : '/'}
-            className="text-xs text-gray-400 hover:text-white transition-colors"
+            className="text-xs text-gray-500 hover:text-gray-800 transition-colors"
           >
             {isAdmin ? 'شجراتي' : 'الرئيسية'}
           </Link>

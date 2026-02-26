@@ -40,14 +40,14 @@ export default function TreeControls({
   return (
     <div className="absolute top-4 right-4 z-30 flex flex-col gap-2 w-64">
       {/* Lineage Mode Toggle */}
-      <div className="bg-navy-800/95 backdrop-blur-sm border border-navy-600 rounded-xl p-3">
+      <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl p-3 shadow-sm">
         <div className="flex items-center gap-2">
           <button
             onClick={onToggleLineage}
             className={`flex-1 text-xs py-2 rounded-lg transition-colors cursor-pointer font-medium
               ${lineageMode === 'male'
-                ? 'bg-gold-500 text-navy-900'
-                : 'bg-navy-700 text-gray-400 hover:text-white'
+                ? 'bg-gold-500 text-white'
+                : 'bg-gray-100 text-gray-500 hover:text-gray-700'
               }`}
           >
             نسب الذكور
@@ -56,8 +56,8 @@ export default function TreeControls({
             onClick={onToggleLineage}
             className={`flex-1 text-xs py-2 rounded-lg transition-colors cursor-pointer font-medium
               ${lineageMode === 'full'
-                ? 'bg-gold-500 text-navy-900'
-                : 'bg-navy-700 text-gray-400 hover:text-white'
+                ? 'bg-gold-500 text-white'
+                : 'bg-gray-100 text-gray-500 hover:text-gray-700'
               }`}
           >
             شجرة كاملة
@@ -66,12 +66,12 @@ export default function TreeControls({
       </div>
 
       {/* Root Person Selector */}
-      <div className="bg-navy-800/95 backdrop-blur-sm border border-navy-600 rounded-xl p-3">
-        <label className="text-xs text-gray-500 block mb-1">الجذر</label>
+      <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl p-3 shadow-sm">
+        <label className="text-xs text-gray-400 block mb-1">الجذر</label>
         <select
           value={rootPersonId || ''}
           onChange={(e) => onChangeRoot(e.target.value)}
-          className="w-full text-sm bg-navy-700 border border-navy-600 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:ring-1 focus:ring-gold-500"
+          className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-gray-800 focus:outline-none focus:ring-1 focus:ring-gold-500"
           dir="rtl"
         >
           {rootOptions.map(opt => (
@@ -81,9 +81,9 @@ export default function TreeControls({
       </div>
 
       {/* Depth Slider */}
-      <div className="bg-navy-800/95 backdrop-blur-sm border border-navy-600 rounded-xl p-3">
+      <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl p-3 shadow-sm">
         <div className="flex items-center justify-between mb-1">
-          <label className="text-xs text-gray-500">الأجيال</label>
+          <label className="text-xs text-gray-400">الأجيال</label>
           <span className="text-xs text-gold-500">{maxDepth}</span>
         </div>
         <input
@@ -97,7 +97,7 @@ export default function TreeControls({
       </div>
 
       {/* Search */}
-      <div className="bg-navy-800/95 backdrop-blur-sm border border-navy-600 rounded-xl p-3">
+      <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl p-3 shadow-sm">
         <div className="relative">
           <input
             type="text"
@@ -108,13 +108,13 @@ export default function TreeControls({
             }}
             onFocus={() => setShowSearch(true)}
             placeholder="بحث بالاسم..."
-            className="w-full text-sm bg-navy-700 border border-navy-600 rounded-lg px-3 py-1.5 text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gold-500"
+            className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gold-500"
             dir="rtl"
           />
 
           {/* Search Results Dropdown */}
           {showSearch && searchResults.length > 0 && (
-            <div className="absolute top-full mt-1 w-full bg-navy-700 border border-navy-600 rounded-lg shadow-xl overflow-hidden z-50">
+            <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden z-50">
               {searchResults.map(person => (
                 <button
                   key={person.id}
@@ -127,7 +127,7 @@ export default function TreeControls({
                     setSearchQuery('');
                     setShowSearch(false);
                   }}
-                  className="w-full text-right px-3 py-2 text-sm text-gray-300 hover:bg-navy-600 hover:text-white transition-colors cursor-pointer flex items-center gap-2"
+                  className="w-full text-right px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer flex items-center gap-2"
                 >
                   <span className="text-xs">{person.gender === 'male' ? '👨' : '👩'}</span>
                   <span>{personFullName(person, persons)}</span>
@@ -140,10 +140,10 @@ export default function TreeControls({
 
       {/* Compare Two People */}
       {onComparePersons && (
-        <div className="bg-navy-800/95 backdrop-blur-sm border border-navy-600 rounded-xl p-3">
+        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl p-3 shadow-sm">
           <button
             onClick={onComparePersons}
-            className="w-full text-xs py-2 rounded-lg bg-navy-700 text-gray-300 hover:text-white hover:bg-navy-600 transition-colors cursor-pointer font-medium"
+            className="w-full text-xs py-2 rounded-lg bg-gray-100 text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-colors cursor-pointer font-medium"
           >
             مقارنة شخصين
           </button>

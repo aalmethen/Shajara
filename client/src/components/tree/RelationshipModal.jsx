@@ -110,13 +110,13 @@ export default function RelationshipModal({
             placeholder="ابحث بالاسم..."
             value={fromSearch}
             onChange={(e) => setFromSearch(e.target.value)}
-            className="w-full bg-navy-900 border border-navy-600 rounded-lg px-3 py-2 text-white text-sm mb-1 focus:border-gold-500 focus:outline-none"
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm mb-1 focus:border-gold-500 focus:outline-none"
             dir="rtl"
           />
           <select
             value={fromId}
             onChange={(e) => { setFromId(e.target.value); setResult(null); }}
-            className="w-full bg-navy-900 border border-navy-600 rounded-lg px-3 py-2 text-white text-sm focus:border-gold-500 focus:outline-none"
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-gold-500 focus:outline-none"
             dir="rtl"
             size={fromSearch ? Math.min(filteredFromPersons.length, 6) : 1}
           >
@@ -142,13 +142,13 @@ export default function RelationshipModal({
             placeholder="ابحث بالاسم..."
             value={toSearch}
             onChange={(e) => setToSearch(e.target.value)}
-            className="w-full bg-navy-900 border border-navy-600 rounded-lg px-3 py-2 text-white text-sm mb-1 focus:border-gold-500 focus:outline-none"
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm mb-1 focus:border-gold-500 focus:outline-none"
             dir="rtl"
           />
           <select
             value={toId}
             onChange={(e) => { setToId(e.target.value); setResult(null); }}
-            className="w-full bg-navy-900 border border-navy-600 rounded-lg px-3 py-2 text-white text-sm focus:border-gold-500 focus:outline-none"
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-gold-500 focus:outline-none"
             dir="rtl"
             size={toSearch ? Math.min(filteredToPersons.length, 6) : 1}
           >
@@ -177,7 +177,7 @@ export default function RelationshipModal({
 
         {/* Error */}
         {error && (
-          <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-3 text-sm text-red-400 text-center">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600 text-center">
             {error}
           </div>
         )}
@@ -186,17 +186,17 @@ export default function RelationshipModal({
         {result && (
           <div className="space-y-4">
             {/* Main label */}
-            <div className="text-center bg-navy-900 rounded-xl p-6 border border-gold-500/30">
+            <div className="text-center bg-amber-50 rounded-xl p-6 border border-gold-500/30">
               <p className="text-3xl font-bold text-gold-500 font-amiri mb-2">
                 {result.label}
               </p>
               {result.description && (
-                <p className="text-sm text-gray-300 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   {result.description}
                 </p>
               )}
               {result.commonAncestor && (
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-gray-400 mt-2">
                   الجد المشترك: <span className="text-gold-500">{personFullName(result.commonAncestor, persons)}</span>
                 </p>
               )}
@@ -216,12 +216,12 @@ export default function RelationshipModal({
                       )}
                       <div className={`px-4 py-2 rounded-lg border text-sm ${
                         i === 0
-                          ? 'bg-navy-700 border-gold-500/50 text-gold-400'
+                          ? 'bg-amber-50 border-gold-500/50 text-gold-600'
                           : i === result.path.length - 1
-                          ? 'bg-navy-700 border-gold-500/50 text-gold-400'
+                          ? 'bg-amber-50 border-gold-500/50 text-gold-600'
                           : result.commonAncestor && step.person?.id === result.commonAncestor.id
-                          ? 'bg-gold-500/10 border-gold-500/50 text-gold-300'
-                          : 'bg-navy-900 border-navy-600 text-gray-300'
+                          ? 'bg-gold-500/10 border-gold-500/50 text-gold-600'
+                          : 'bg-gray-50 border-gray-200 text-gray-600'
                       }`}>
                         <span className="ml-1">
                           {step.person?.gender === 'male' ? '👨' : '👩'}

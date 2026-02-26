@@ -85,11 +85,11 @@ export default function LinkPersonModal({
         {/* Results */}
         <div className="max-h-64 overflow-y-auto">
           {loading && (
-            <p className="text-gray-500 text-sm text-center py-4">جاري البحث...</p>
+            <p className="text-gray-400 text-sm text-center py-4">جاري البحث...</p>
           )}
 
           {!loading && searched && results.length === 0 && (
-            <p className="text-gray-500 text-sm text-center py-4">لم يتم العثور على نتائج</p>
+            <p className="text-gray-400 text-sm text-center py-4">لم يتم العثور على نتائج</p>
           )}
 
           {!loading && results.length > 0 && (
@@ -98,13 +98,13 @@ export default function LinkPersonModal({
                 <button
                   key={person.id}
                   onClick={() => handleSelect(person)}
-                  className="w-full text-right px-3 py-2 rounded-lg hover:bg-navy-700 transition-colors flex items-center justify-between group cursor-pointer"
+                  className="w-full text-right px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-between group cursor-pointer"
                 >
                   <div>
-                    <span className="text-sm text-white">
+                    <span className="text-sm text-gray-800">
                       {personFullName(person)}
                     </span>
-                    <span className="text-xs text-gray-500 mr-2">
+                    <span className="text-xs text-gray-400 mr-2">
                       ({person.gender === 'male' ? 'ذكر' : 'أنثى'})
                     </span>
                     {person.home_tree_name && (

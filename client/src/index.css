@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy-900: #0f172a;
-  --color-navy-800: #1e293b;
-  --color-navy-700: #334155;
-  --color-navy-600: #475569;
-  --color-charcoal: #1a1a2e;
-  --color-gold-500: #d4a843;
-  --color-gold-400: #e0b85c;
-  --color-gold-600: #c9952a;
-  --color-gold-700: #a67c1e;
+  --color-navy-900: #f8f9fb;
+  --color-navy-800: #ffffff;
+  --color-navy-700: #e5e7eb;
+  --color-navy-600: #d1d5db;
+  --color-charcoal: #f3f4f6;
+  --color-gold-500: #b8860b;
+  --color-gold-400: #d4a843;
+  --color-gold-600: #996f0a;
+  --color-gold-700: #7a5908;
   --font-family-kufi: 'Noto Kufi Arabic', sans-serif;
   --font-family-amiri: 'Amiri', serif;
 }
@@ -23,23 +23,23 @@
 
 body {
   font-family: 'Noto Kufi Arabic', sans-serif;
-  background-color: #0f172a;
-  color: #e2e8f0;
+  background-color: #f8f9fb;
+  color: #1e293b;
   direction: rtl;
   min-height: 100vh;
 }
 
-/* Scrollbar styling for dark theme */
+/* Scrollbar styling for light theme */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1e293b;
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #475569;
+  background: #94a3b8;
   border-radius: 4px;
 }
 
@@ -58,12 +58,12 @@ body {
 }
 
 .tree-node:hover {
-  filter: brightness(1.2);
+  filter: brightness(0.95);
 }
 
 /* Gold gradient text */
 .text-gold-gradient {
-  background: linear-gradient(135deg, #d4a843, #e0b85c);
+  background: linear-gradient(135deg, #996f0a, #b8860b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -72,6 +72,6 @@ body {
 /* Subtle geometric pattern overlay */
 .pattern-overlay {
   background-image:
-    radial-gradient(circle at 25% 25%, rgba(212, 168, 67, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 75% 75%, rgba(212, 168, 67, 0.03) 0%, transparent 50%);
+    radial-gradient(circle at 25% 25%, rgba(184, 134, 11, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(184, 134, 11, 0.04) 0%, transparent 50%);
 }

@@ -17,8 +17,8 @@ const PersonNode = memo(function PersonNode({ person, spouses, isSelected, onCli
           px-4 py-2.5 min-w-[120px] text-center
           border-2 transition-all duration-200
           ${isMale
-            ? 'rounded-lg border-gold-500/60 bg-navy-800'
-            : 'rounded-full border-pink-400/60 bg-navy-800'
+            ? 'rounded-lg border-gold-500/60 bg-white'
+            : 'rounded-full border-pink-400/60 bg-white'
           }
           ${isDeceased ? 'opacity-60' : ''}
           ${isSelected
@@ -28,7 +28,7 @@ const PersonNode = memo(function PersonNode({ person, spouses, isSelected, onCli
         `}
       >
         {/* Name */}
-        <div className={`text-sm font-semibold ${isDeceased ? 'text-gray-400' : 'text-white'}`}>
+        <div className={`text-sm font-semibold ${isDeceased ? 'text-gray-400' : 'text-gray-800'}`}>
           {person.first_name}
         </div>
 
@@ -64,14 +64,14 @@ const PersonNode = memo(function PersonNode({ person, spouses, isSelected, onCli
               px-3 py-2 min-w-[90px] text-center
               border transition-all duration-200
               ${spouse.gender === 'male'
-                ? 'rounded-lg border-gold-500/40 bg-navy-800/80'
-                : 'rounded-full border-pink-400/40 bg-navy-800/80'
+                ? 'rounded-lg border-gold-500/40 bg-gray-50'
+                : 'rounded-full border-pink-400/40 bg-gray-50'
               }
               ${spouse.status === 'deceased' ? 'opacity-60' : ''}
               hover:border-gold-400/60
             `}
           >
-            <div className={`text-xs font-medium ${spouse.status === 'deceased' ? 'text-gray-500' : 'text-gray-300'}`}>
+            <div className={`text-xs font-medium ${spouse.status === 'deceased' ? 'text-gray-400' : 'text-gray-600'}`}>
               {spouse.first_name}
             </div>
             {relationship.marriage_order > 1 && (

@@ -65,10 +65,10 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="text-2xl font-bold text-gray-800">
               {isGlobalAdmin ? 'كل الشجرات' : 'شجراتي'}
             </h1>
-            <p className="text-gray-500 text-sm mt-1">
+            <p className="text-gray-400 text-sm mt-1">
               {isGlobalAdmin ? 'إدارة جميع شجرات العائلة' : 'إدارة شجرات العائلة الخاصة بك'}
             </p>
           </div>
@@ -79,12 +79,12 @@ export default function Dashboard() {
 
         {/* Trees Grid */}
         {loading ? (
-          <div className="text-center py-20 text-gray-500">جاري التحميل...</div>
+          <div className="text-center py-20 text-gray-400">جاري التحميل...</div>
         ) : trees.length === 0 ? (
           <div className="text-center py-20">
             <div className="text-5xl mb-4">🌱</div>
-            <h2 className="text-xl text-gray-400 mb-2">لا توجد شجرات بعد</h2>
-            <p className="text-gray-500 text-sm mb-6">أنشئ شجرة عائلتك الأولى</p>
+            <h2 className="text-xl text-gray-500 mb-2">لا توجد شجرات بعد</h2>
+            <p className="text-gray-400 text-sm mb-6">أنشئ شجرة عائلتك الأولى</p>
             <Button onClick={() => setShowCreateModal(true)}>
               إنشاء شجرة جديدة
             </Button>
@@ -95,35 +95,35 @@ export default function Dashboard() {
               <div
                 key={tree.id}
                 onClick={() => navigate(`/tree/${tree.slug}`)}
-                className="bg-navy-800 border border-navy-700 rounded-xl p-6 hover:border-gold-500/50 transition-all cursor-pointer group"
+                className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-500/50 hover:shadow-md transition-all cursor-pointer group"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-white group-hover:text-gold-500 transition-colors">
+                    <h3 className="text-lg font-semibold text-gray-800 group-hover:text-gold-500 transition-colors">
                       {tree.name}
                     </h3>
                     {tree.description && (
-                      <p className="text-gray-500 text-sm mt-1 line-clamp-2">{tree.description}</p>
+                      <p className="text-gray-400 text-sm mt-1 line-clamp-2">{tree.description}</p>
                     )}
                   </div>
-                  <span className="text-xs px-2 py-1 bg-navy-700 rounded-full text-gray-400">
+                  <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-500">
                     {tree.role === 'admin' ? 'مدير' : 'مشاهد'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-gray-500">
+                <div className="flex items-center justify-between text-xs text-gray-400">
                   <span>{tree.person_count || 0} شخص</span>
                   <span>{new Date(tree.created_at).toLocaleDateString('ar-SA')}</span>
                 </div>
 
                 {isGlobalAdmin && tree.owner_name && (
-                  <div className="text-xs text-gray-600 mt-2">
+                  <div className="text-xs text-gray-400 mt-2">
                     المالك: {tree.owner_name}
                   </div>
                 )}
 
-                <div className="mt-3 pt-3 border-t border-navy-700">
-                  <span className="text-xs text-gray-600 font-mono" dir="ltr">
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <span className="text-xs text-gray-400 font-mono" dir="ltr">
                     /tree/{tree.slug}
                   </span>
                 </div>
@@ -140,7 +140,7 @@ export default function Dashboard() {
         >
           <form onSubmit={handleCreateTree} className="space-y-4">
             {error && (
-              <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm">
                 {error}
               </div>
             )}
@@ -167,7 +167,7 @@ export default function Dashboard() {
               placeholder="al-falani"
               dir="ltr"
             />
-            <p className="text-xs text-gray-500">سيكون الرابط: /tree/{newTreeSlug || '...'}</p>
+            <p className="text-xs text-gray-400">سيكون الرابط: /tree/{newTreeSlug || '...'}</p>
 
             <div className="flex gap-3 pt-2">
               <Button type="submit" disabled={creating || !newTreeName.trim()}>

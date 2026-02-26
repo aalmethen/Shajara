@@ -78,13 +78,13 @@ export default function PersonDetailPanel({
   const deathYear = person.death_date?.match(/\d{4}/)?.[0] || person.death_date;
 
   return (
-    <div className="fixed top-0 right-0 h-full w-96 max-w-[90vw] bg-navy-800 border-l border-navy-600 shadow-2xl z-50 overflow-y-auto">
+    <div className="fixed top-0 right-0 h-full w-96 max-w-[90vw] bg-white border-l border-gray-200 shadow-2xl z-50 overflow-y-auto">
       {/* Header */}
-      <div className="sticky top-0 bg-navy-800 border-b border-navy-700 px-6 py-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">تفاصيل الشخص</h2>
+      <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-gray-800">تفاصيل الشخص</h2>
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-navy-700 transition-colors cursor-pointer"
+          className="text-gray-400 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -95,18 +95,18 @@ export default function PersonDetailPanel({
       <div className="px-6 py-5 space-y-6">
         {/* Person icon & name */}
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto rounded-full bg-navy-700 flex items-center justify-center text-2xl mb-3 border-2 border-gold-500/30">
+          <div className="w-16 h-16 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-2xl mb-3 border-2 border-gold-500/30">
             {person.gender === 'male' ? '👨' : '👩'}
           </div>
-          <h3 className="text-xl font-bold text-white">
+          <h3 className="text-xl font-bold text-gray-800">
             {personFullName(person, persons)}
           </h3>
 
           {/* Status badge */}
           <span className={`inline-block mt-2 text-xs px-3 py-1 rounded-full
             ${person.status === 'deceased'
-              ? 'bg-gray-700 text-gray-400'
-              : 'bg-green-900/30 text-green-400 border border-green-500/30'
+              ? 'bg-gray-100 text-gray-500'
+              : 'bg-green-50 text-green-600 border border-green-200'
             }`}
           >
             {person.status === 'deceased' ? 'متوفى' : 'على قيد الحياة'}
@@ -116,7 +116,7 @@ export default function PersonDetailPanel({
           {person.home_tree_id && currentTree && person.home_tree_id !== currentTree.id && person.home_tree_slug && (
             <Link
               to={`/tree/${person.home_tree_slug}`}
-              className="inline-flex items-center gap-1.5 mt-2 mr-2 text-xs px-3 py-1 rounded-full bg-blue-900/30 text-blue-400 border border-blue-500/30 hover:bg-blue-900/50 hover:border-blue-500/50 transition-colors"
+              className="inline-flex items-center gap-1.5 mt-2 mr-2 text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 hover:border-blue-300 transition-colors"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -128,9 +128,9 @@ export default function PersonDetailPanel({
 
         {/* Nasab */}
         {nasab && (
-          <div className="bg-navy-900 rounded-lg p-4 border border-navy-700">
+          <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
             <h4 className="text-xs text-gold-500 font-semibold mb-2">النسب</h4>
-            <p className="font-amiri text-lg text-gray-200 leading-loose">
+            <p className="font-amiri text-lg text-gray-700 leading-loose">
               {nasab}
             </p>
           </div>
@@ -139,15 +139,15 @@ export default function PersonDetailPanel({
         {/* Dates */}
         <div className="grid grid-cols-2 gap-3">
           {birthYear && (
-            <div className="bg-navy-900 rounded-lg p-3 border border-navy-700">
-              <div className="text-xs text-gray-500 mb-1">الميلاد</div>
-              <div className="text-sm text-white">{birthYear}</div>
+            <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <div className="text-xs text-gray-400 mb-1">الميلاد</div>
+              <div className="text-sm text-gray-800">{birthYear}</div>
             </div>
           )}
           {deathYear && (
-            <div className="bg-navy-900 rounded-lg p-3 border border-navy-700">
-              <div className="text-xs text-gray-500 mb-1">الوفاة</div>
-              <div className="text-sm text-white">{deathYear}</div>
+            <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <div className="text-xs text-gray-400 mb-1">الوفاة</div>
+              <div className="text-sm text-gray-800">{deathYear}</div>
             </div>
           )}
         </div>
@@ -155,32 +155,32 @@ export default function PersonDetailPanel({
         {/* Bio */}
         {person.bio && (
           <div>
-            <h4 className="text-xs text-gray-500 font-semibold mb-2">نبذة</h4>
-            <p className="text-sm text-gray-300 leading-relaxed">{person.bio}</p>
+            <h4 className="text-xs text-gray-400 font-semibold mb-2">نبذة</h4>
+            <p className="text-sm text-gray-600 leading-relaxed">{person.bio}</p>
           </div>
         )}
 
         {/* Parents */}
         {(father || mother) && (
           <div>
-            <h4 className="text-xs text-gray-500 font-semibold mb-2">الوالدان</h4>
+            <h4 className="text-xs text-gray-400 font-semibold mb-2">الوالدان</h4>
             <div className="space-y-2">
               {father && (
                 <button
                   onClick={() => onViewFromHere?.(father.id)}
-                  className="w-full text-right bg-navy-900 rounded-lg p-3 border border-navy-700 hover:border-gold-500/40 transition-colors cursor-pointer"
+                  className="w-full text-right bg-gray-50 rounded-lg p-3 border border-gray-200 hover:border-gold-500/40 transition-colors cursor-pointer"
                 >
-                  <span className="text-xs text-gray-500">الأب:</span>
-                  <span className="text-sm text-white mr-2">{personFullName(father, persons)}</span>
+                  <span className="text-xs text-gray-400">الأب:</span>
+                  <span className="text-sm text-gray-800 mr-2">{personFullName(father, persons)}</span>
                 </button>
               )}
               {mother && (
                 <button
                   onClick={() => onViewFromHere?.(mother.id)}
-                  className="w-full text-right bg-navy-900 rounded-lg p-3 border border-navy-700 hover:border-pink-400/40 transition-colors cursor-pointer"
+                  className="w-full text-right bg-gray-50 rounded-lg p-3 border border-gray-200 hover:border-pink-400/40 transition-colors cursor-pointer"
                 >
-                  <span className="text-xs text-gray-500">الأم:</span>
-                  <span className="text-sm text-white mr-2">{personFullName(mother, persons)}</span>
+                  <span className="text-xs text-gray-400">الأم:</span>
+                  <span className="text-sm text-gray-800 mr-2">{personFullName(mother, persons)}</span>
                 </button>
               )}
             </div>
@@ -190,16 +190,16 @@ export default function PersonDetailPanel({
         {/* Spouses */}
         {personSpouses.length > 0 && (
           <div>
-            <h4 className="text-xs text-gray-500 font-semibold mb-2">
+            <h4 className="text-xs text-gray-400 font-semibold mb-2">
               {person.gender === 'male' ? 'الزوجات' : 'الأزواج'}
             </h4>
             <div className="space-y-2">
               {personSpouses.map(({ spouse, ...s }) => (
-                <div key={s.id} className="bg-navy-900 rounded-lg p-3 border border-navy-700">
+                <div key={s.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white">{personFullName(spouse, persons)}</span>
+                    <span className="text-sm text-gray-800">{personFullName(spouse, persons)}</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-400">
                         {s.status === 'married' ? 'متزوجان' : s.status === 'divorced' ? 'مطلقان' : 'أرملة'}
                       </span>
                       {isAdmin && (
@@ -209,7 +209,7 @@ export default function PersonDetailPanel({
                               onDeleteSpouse?.(s.id);
                             }
                           }}
-                          className="text-xs text-red-400/50 hover:text-red-400 transition-colors cursor-pointer"
+                          className="text-xs text-red-300 hover:text-red-500 transition-colors cursor-pointer"
                         >
                           ✕
                         </button>
@@ -217,12 +217,12 @@ export default function PersonDetailPanel({
                     </div>
                   </div>
                   {s.marriage_date && (
-                    <div className="text-xs text-gray-500 mt-1">الزواج: {s.marriage_date}</div>
+                    <div className="text-xs text-gray-400 mt-1">الزواج: {s.marriage_date}</div>
                   )}
                   {spouse.home_tree_id && currentTree && spouse.home_tree_id !== currentTree.id && spouse.home_tree_slug && (
                     <Link
                       to={`/tree/${spouse.home_tree_slug}`}
-                      className="inline-flex items-center gap-1 mt-2 text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                      className="inline-flex items-center gap-1 mt-2 text-xs text-blue-500 hover:text-blue-600 transition-colors"
                     >
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -239,7 +239,7 @@ export default function PersonDetailPanel({
         {/* Children */}
         {childrenGroups.length > 0 && (
           <div>
-            <h4 className="text-xs text-gray-500 font-semibold mb-2">الأبناء</h4>
+            <h4 className="text-xs text-gray-400 font-semibold mb-2">الأبناء</h4>
             {childrenGroups.map((group, gi) => (
               <div key={gi} className="mb-3">
                 {childrenGroups.length > 1 && (
@@ -252,8 +252,8 @@ export default function PersonDetailPanel({
                       onClick={() => onViewFromHere?.(child.id)}
                       className={`text-xs px-3 py-1.5 rounded-lg border transition-colors cursor-pointer
                         ${child.gender === 'male'
-                          ? 'bg-navy-900 border-gold-500/30 text-gray-300 hover:border-gold-500/60'
-                          : 'bg-navy-900 border-pink-400/30 text-gray-300 hover:border-pink-400/60'
+                          ? 'bg-amber-50 border-gold-500/30 text-gray-700 hover:border-gold-500/60'
+                          : 'bg-pink-50 border-pink-400/30 text-gray-700 hover:border-pink-400/60'
                         }`}
                     >
                       {personFullName(child, persons)}
@@ -266,7 +266,7 @@ export default function PersonDetailPanel({
         )}
 
         {/* Actions */}
-        <div className="pt-4 border-t border-navy-700 space-y-2">
+        <div className="pt-4 border-t border-gray-200 space-y-2">
           <Button
             variant="secondary"
             size="sm"
@@ -326,7 +326,7 @@ export default function PersonDetailPanel({
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full text-red-400 hover:text-red-300"
+                className="w-full text-red-500 hover:text-red-600"
                 onClick={() => {
                   if (window.confirm(`هل أنت متأكد من حذف "${personFullName(person, persons)}"؟ لا يمكن التراجع عن هذا الإجراء.`)) {
                     onDelete?.(person.id);

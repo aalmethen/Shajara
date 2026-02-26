@@ -205,52 +205,62 @@ function labelRelationship(personAId, personBId, personMap, lca) {
   }
 
   // Uncle/Aunt (A is sibling of B's parent)
+  // depthA=1: A is child of LCA, depthB=2: B is grandchild of LCA
+  // A is uncle/aunt of B → label: "فلان عم فلان"
   if (depthA === 1 && depthB === 2) {
     const isViaFather = pathGoesViaFather(personBId, lcaId, personMap);
-    if (personA.gender === 'male') {
-      return {
-        label: isViaFather ? 'عمه' : 'خاله',
-        description: `${personA.first_name} هو ${isViaFather ? 'عم' : 'خال'} ${personB.first_name}`,
-        commonAncestor: lcaPerson,
-      };
-    } else {
-      return {
-        label: isViaFather ? 'عمته' : 'خالته',
-        description: `${personA.first_name} هي ${isViaFather ? 'عمة' : 'خالة'} ${personB.first_name}`,
-        commonAncestor: lcaPerson,
-      };
-    }
+    const role = personA.gender === 'male'
+      ? (isViaFather ? 'عم' : 'خال')
+      : (isViaFather ? 'عمة' : 'خالة');
+    return {
+      label: `${personA.first_name} ${role} ${personB.first_name}`,
+      description: `${personA.first_name} ${personA.gender === 'male' ? 'هو' : 'هي'} ${role} ${personB.first_name}`,
+      commonAncestor: lcaPerson,
+    };
   }
 
-  // Nephew/Niece (B is sibling of A's parent)
+  // B is uncle/aunt of A
+  // depthA=2: A is grandchild of LCA, depthB=1: B is child of LCA
   if (depthA === 2 && depthB === 1) {
     const isViaFather = pathGoesViaFather(personAId, lcaId, personMap);
-    if (bIsMale) {
-      return {
-        label: isViaFather ? 'ابن أخيه' : 'ابن أخيه من الأم',
-        description: `${personB.first_name} هو ${isViaFather ? 'عم' : 'خال'} ${personA.first_name}`,
-        commonAncestor: lcaPerson,
-      };
-    } else {
-      return {
-        label: isViaFather ? 'بنت أخيه' : 'بنت أخيه من الأم',
-        description: `${personB.first_name} هي ${isViaFather ? 'عمة' : 'خالة'} ${personA.first_name}`,
-        commonAncestor: lcaPerson,
-      };
-    }
+    const role = bIsMale
+      ? (isViaFather ? 'عم' : 'خال')
+      : (isViaFather ? 'عمة' : 'خالة');
+    return {
+      label: `${personB.first_name} ${role} ${personA.first_name}`,
+      description: `${personB.first_name} ${bIsMale ? 'هو' : 'هي'} ${role} ${personA.first_name}`,
+      commonAncestor: lcaPerson,
+    };
   }
 
-  // Great uncle/aunt
+  // Great uncle/aunt (A is sibling of B's grandparent or higher)
+  // depthA=1: A is child of LCA, depthB>2: B is deeper descendant
   if (depthA === 1 && depthB > 2) {
     const isViaFather = pathGoesViaFather(personBId, lcaId, personMap);
-    const prefix = personA.gender === 'male'
+    const aIsMale = personA.gender === 'male';
+    const role = aIsMale
       ? (isViaFather ? 'عم' : 'خال')
       : (isViaFather ? 'عمة' : 'خالة');
     const gen = depthB - 2;
-    const genLabel = gen === 1 ? 'الأب' : `الجد ${'الأكبر '.repeat(gen - 1)}`.trim();
+    const genLabel = gen === 1 ? 'أبو' : gen === 2 ? 'جد' : `جد ${'أبو '.repeat(gen - 2)}`.trim();
     return {
-      label: `${prefix} ${genLabel}`,
-      description: `${personA.first_name} هو ${prefix} ${genLabel} لـ${personB.first_name}`,
+      label: `${personA.first_name} ${role} ${genLabel} ${personB.first_name}`,
+      description: `${personA.first_name} ${aIsMale ? 'هو' : 'هي'} ${role} ${genLabel} ${personB.first_name}`,
+      commonAncestor: lcaPerson,
+    };
+  }
+
+  // B is great uncle/aunt of A (depthA>2, depthB=1)
+  if (depthA > 2 && depthB === 1) {
+    const isViaFather = pathGoesViaFather(personAId, lcaId, personMap);
+    const role = bIsMale
+      ? (isViaFather ? 'عم' : 'خال')
+      : (isViaFather ? 'عمة' : 'خالة');
+    const gen = depthA - 2;
+    const genLabel = gen === 1 ? 'أبو' : gen === 2 ? 'جد' : `جد ${'أبو '.repeat(gen - 2)}`.trim();
+    return {
+      label: `${personB.first_name} ${role} ${genLabel} ${personA.first_name}`,
+      description: `${personB.first_name} ${bIsMale ? 'هو' : 'هي'} ${role} ${genLabel} ${personA.first_name}`,
       commonAncestor: lcaPerson,
     };
   }
@@ -488,21 +498,120 @@ function labelSpouseRelationship(path, personMap, persons, spouses) {
     const bIsMale = personB.gender === 'male';
     return {
       label: bIsMale ? 'زوجها' : 'زوجته',
-      description: `${personA.first_name} و${personB.first_name} ${bIsMale ? 'متزوجان' : 'متزوجان'}`,
+      description: `${personA.first_name} و${personB.first_name} متزوجان`,
       path: formatPath(path, personMap),
       commonAncestor: null,
     };
   }
 
-  // Complex relationship through spouse — describe it generically
   const personA = personMap.get(path[0].id);
   const personB = personMap.get(path[path.length - 1].id);
-  const spousePerson = personMap.get(path[spouseIdx].id);
-  const preSpousePerson = personMap.get(path[spouseIdx - 1].id);
+  const aIsMale = personA.gender === 'male';
 
+  // Analyze the two segments around the spouse edge
+  // Segment before spouse: path[0..spouseIdx-1] (A's side)
+  // Segment after spouse: path[spouseIdx..end] (B's side)
+  const preSpouseId = path[spouseIdx - 1]?.id;  // person on A's side of marriage
+  const postSpouseId = path[spouseIdx]?.id;      // person on B's side of marriage
+  const preSpouse = personMap.get(preSpouseId);
+  const postSpouse = personMap.get(postSpouseId);
+
+  // Count steps on each side (excluding the spouse edge itself)
+  const stepsBeforeSpouse = spouseIdx - 1;  // steps from A to preSpouse
+  const stepsAfterSpouse = path.length - 1 - spouseIdx;  // steps from postSpouse to B
+
+  // Determine edge types on each side
+  const edgesBeforeSpouse = path.slice(1, spouseIdx).map(s => s.edge?.type);
+  const edgesAfterSpouse = path.slice(spouseIdx + 1).map(s => s.edge?.type);
+
+  // Helper: describe a one-side relationship
+  const describeOneSide = (steps, edges, targetPerson, isFromA) => {
+    if (steps === 0) return { role: 'self', gender: targetPerson?.gender };
+    if (steps === 1) {
+      const edge = edges[0];
+      if (edge === 'parent') return { role: 'parent', gender: targetPerson?.gender };
+      if (edge === 'child') return { role: 'child', gender: targetPerson?.gender };
+    }
+    if (steps === 2 && edges[0] === 'parent' && edges[1] === 'child') return { role: 'sibling', gender: targetPerson?.gender };
+    if (steps === 2 && edges[0] === 'parent' && edges[1] === 'parent') return { role: 'grandparent', gender: targetPerson?.gender };
+    if (steps === 2 && edges[0] === 'child' && edges[1] === 'child') return { role: 'grandchild', gender: targetPerson?.gender };
+    return { role: 'relative', gender: targetPerson?.gender };
+  };
+
+  const sideA = describeOneSide(stepsBeforeSpouse, edgesBeforeSpouse, preSpouse, true);
+  const sideB = describeOneSide(stepsAfterSpouse, edgesAfterSpouse, personB, false);
+
+  // Build specific in-law labels
+  const spouseWord = aIsMale ? 'زوجته' : 'زوجه';
+
+  // A's spouse is B's relative — B is relative of A's spouse
+  if (sideA.role === 'self') {
+    // A is directly married to someone, B is relative of that spouse
+    if (sideB.role === 'parent') {
+      const bIsMale = personB.gender === 'male';
+      return {
+        label: bIsMale ? `أبو ${spouseWord}` : `أم ${spouseWord}`,
+        description: `${personB.first_name} ${bIsMale ? 'هو أبو' : 'هي أم'} ${spouseWord === 'زوجته' ? 'زوجة' : 'زوج'} ${personA.first_name}`,
+        path: formatPath(path, personMap),
+        commonAncestor: null,
+      };
+    }
+    if (sideB.role === 'sibling') {
+      const bIsMale = personB.gender === 'male';
+      return {
+        label: bIsMale ? `أخو ${spouseWord}` : `أخت ${spouseWord}`,
+        description: `${personB.first_name} ${bIsMale ? 'أخو' : 'أخت'} ${postSpouse?.first_name || ''}`,
+        path: formatPath(path, personMap),
+        commonAncestor: null,
+      };
+    }
+    if (sideB.role === 'child') {
+      const bIsMale = personB.gender === 'male';
+      return {
+        label: bIsMale ? `ابن ${spouseWord}` : `بنت ${spouseWord}`,
+        description: `${personB.first_name} ${bIsMale ? 'ابن' : 'بنت'} ${postSpouse?.first_name || ''}`,
+        path: formatPath(path, personMap),
+        commonAncestor: null,
+      };
+    }
+  }
+
+  // B is directly married to A's relative
+  if (sideB.role === 'self') {
+    // B is the spouse of someone who is A's relative
+    if (sideA.role === 'parent') {
+      const bIsMale = personB.gender === 'male';
+      return {
+        label: bIsMale ? `زوج أمه` : `زوجة أبوه`,
+        description: `${personB.first_name} ${bIsMale ? 'زوج أم' : 'زوجة أب'} ${personA.first_name}`,
+        path: formatPath(path, personMap),
+        commonAncestor: null,
+      };
+    }
+    if (sideA.role === 'sibling') {
+      const bIsMale = personB.gender === 'male';
+      return {
+        label: bIsMale ? `زوج أخته` : `زوجة أخوه`,
+        description: `${personB.first_name} ${bIsMale ? 'زوج أخت' : 'زوجة أخ'} ${personA.first_name}`,
+        path: formatPath(path, personMap),
+        commonAncestor: null,
+      };
+    }
+    if (sideA.role === 'child') {
+      const bIsMale = personB.gender === 'male';
+      return {
+        label: bIsMale ? `زوج ابنته` : `زوجة ابنه`,
+        description: `${personB.first_name} ${bIsMale ? 'زوج بنت' : 'زوجة ابن'} ${personA.first_name}`,
+        path: formatPath(path, personMap),
+        commonAncestor: null,
+      };
+    }
+  }
+
+  // Generic fallback for complex paths through marriage
   return {
     label: `عن طريق المصاهرة`,
-    description: `${personA.first_name} و${personB.first_name} مرتبطان عن طريق المصاهرة (عبر ${preSpousePerson?.first_name || ''} و${spousePerson?.first_name || ''})`,
+    description: `${personA.first_name} و${personB.first_name} مرتبطان عن طريق المصاهرة (عبر ${preSpouse?.first_name || ''} و${postSpouse?.first_name || ''})`,
     path: formatPath(path, personMap),
     commonAncestor: null,
   };

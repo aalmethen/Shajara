@@ -47,12 +47,12 @@ export default function Register() {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gold-gradient font-amiri mb-2">إنشاء حساب</h1>
-            <p className="text-gray-500 text-sm">سجل حسابك لإنشاء شجرة عائلتك</p>
+            <p className="text-gray-400 text-sm">سجل حسابك لإنشاء شجرة عائلتك</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-navy-800 rounded-xl p-6 border border-navy-700 space-y-4">
+          <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm space-y-4">
             {error && (
-              <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm">
                 {error}
               </div>
             )}
@@ -100,7 +100,7 @@ export default function Register() {
               {loading ? 'جاري التسجيل...' : 'إنشاء حساب'}
             </Button>
 
-            <p className="text-center text-gray-500 text-sm">
+            <p className="text-center text-gray-400 text-sm">
               لديك حساب بالفعل؟{' '}
               <Link to="/login" className="text-gold-500 hover:text-gold-400">
                 سجل دخولك
