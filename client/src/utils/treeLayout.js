@@ -173,19 +173,12 @@ function buildNode(person, personMap, spouseMap, mode, visited, depth, maxDepth 
   }
 
   // For shared children (already in tree under the other parent),
-  // create shallow reference nodes so they appear here too
+  // create reference nodes with their full descendant subtree
   for (const child of sharedChildren) {
-    childNodes.push({
-      id: child.id,
-      person: child,
-      spouses: [],
-      childrenGroups: [],
-      children: undefined,
-      _hasChildren: false,
-      _collapsed: false,
-      _isReference: true,
-      depth: depth + 1,
-    });
+    const refNode = buildRefSubtree(child, personMap, spouseMap, mode, depth + 1, maxDepth, collapsedNodes);
+    if (refNode) {
+      childNodes.push(refNode);
+    }
   }
 
   return {
@@ -196,6 +189,81 @@ function buildNode(person, personMap, spouseMap, mode, visited, depth, maxDepth 
     children: childNodes.length > 0 ? childNodes : undefined,
     _hasChildren: hasChildren,
     _collapsed: false,
+    depth,
+  };
+}
+
+/**
+ * Build a reference subtree for a shared child (already placed under the other parent).
+ * This creates a duplicate subtree so descendants are visible under both parents.
+ * Uses its own visited set to avoid infinite loops within the reference subtree.
+ */
+function buildRefSubtree(person, personMap, spouseMap, mode, depth, maxDepth, collapsedNodes) {
+  if (!person || depth > maxDepth) return null;
+
+  const refVisited = new Set();
+  const subtree = buildRefNode(person, personMap, spouseMap, mode, refVisited, depth, maxDepth, collapsedNodes);
+  return subtree;
+}
+
+function buildRefNode(person, personMap, spouseMap, mode, refVisited, depth, maxDepth, collapsedNodes) {
+  if (!person || refVisited.has(person.id)) return null;
+  if (depth > maxDepth) return null;
+
+  refVisited.add(person.id);
+
+  const spouses = (spouseMap.get(person.id) || [])
+    .sort((a, b) => (a.relationship.marriage_order || 1) - (b.relationship.marriage_order || 1));
+
+  // Find children (same logic as buildNode)
+  let children = [];
+  const allPersons = Array.from(personMap.values());
+
+  if (mode === 'male') {
+    if (person.gender === 'male') {
+      children = allPersons.filter(p => p.father_id === person.id);
+    }
+  } else {
+    children = allPersons.filter(p =>
+      p.father_id === person.id || p.mother_id === person.id
+    );
+  }
+
+  const hasChildren = children.length > 0;
+
+  if (collapsedNodes.has(person.id) && hasChildren) {
+    return {
+      id: person.id,
+      person,
+      spouses,
+      childrenGroups: groupChildrenByOtherParent(person, children, personMap),
+      children: undefined,
+      _hasChildren: true,
+      _collapsed: true,
+      _isReference: true,
+      depth,
+    };
+  }
+
+  const childrenGroups = groupChildrenByOtherParent(person, children, personMap);
+
+  const childNodes = [];
+  for (const child of children) {
+    const childNode = buildRefNode(child, personMap, spouseMap, mode, refVisited, depth + 1, maxDepth, collapsedNodes);
+    if (childNode) {
+      childNodes.push(childNode);
+    }
+  }
+
+  return {
+    id: person.id,
+    person,
+    spouses,
+    childrenGroups,
+    children: childNodes.length > 0 ? childNodes : undefined,
+    _hasChildren: hasChildren,
+    _collapsed: false,
+    _isReference: true,
     depth,
   };
 }
