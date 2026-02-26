@@ -77,7 +77,13 @@ function buildSpouseMap(spouses, personMap) {
 }
 
 /**
- * Recursively build a tree node with children
+ * Recursively build a tree node with children.
+ *
+ * In full mode, the same children may belong to both a father and a mother
+ * that are both in the tree. To handle this in a strict tree layout (no DAG),
+ * children are fully expanded only once (under the first parent encountered).
+ * Under the second parent, children appear as shallow reference nodes
+ * (no further recursion) so the user can see them in both places.
  */
 function buildNode(person, personMap, spouseMap, mode, visited, depth, maxDepth = 30, collapsedNodes = new Set()) {
   if (!person || visited.has(person.id)) return null;
@@ -135,6 +141,9 @@ function buildNode(person, personMap, spouseMap, mode, visited, depth, maxDepth 
     }
   }
 
+  // Separate children into new (not yet visited) and already-visited (shared with other parent)
+  const newChildren = children.filter(c => !visited.has(c.id));
+  const sharedChildren = children.filter(c => visited.has(c.id));
   const hasChildren = children.length > 0;
 
   // If node is collapsed, don't expand children
@@ -154,13 +163,29 @@ function buildNode(person, personMap, spouseMap, mode, visited, depth, maxDepth 
   // Group children by the other parent
   const childrenGroups = groupChildrenByOtherParent(person, children, personMap);
 
-  // Recursively build child nodes
+  // Recursively build child nodes (only new children get full recursion)
   const childNodes = [];
-  for (const child of children) {
+  for (const child of newChildren) {
     const childNode = buildNode(child, personMap, spouseMap, mode, visited, depth + 1, maxDepth, collapsedNodes);
     if (childNode) {
       childNodes.push(childNode);
     }
+  }
+
+  // For shared children (already in tree under the other parent),
+  // create shallow reference nodes so they appear here too
+  for (const child of sharedChildren) {
+    childNodes.push({
+      id: child.id,
+      person: child,
+      spouses: [],
+      childrenGroups: [],
+      children: undefined,
+      _hasChildren: false,
+      _collapsed: false,
+      _isReference: true,
+      depth: depth + 1,
+    });
   }
 
   return {

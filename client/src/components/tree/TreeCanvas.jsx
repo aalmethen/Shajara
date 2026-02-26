@@ -390,18 +390,21 @@ export default function TreeCanvas({
               })}
 
               {/* Person nodes + spouse nodes + connectors */}
-              {nodes.map((node) => {
+              {nodes.map((node, nodeIdx) => {
                 const person = node.data.person;
-                const nodeSpouses = (spouseMap.get(person.id) || [])
+                const isRef = node.data._isReference;
+                const nodeSpouses = isRef ? [] : (spouseMap.get(person.id) || [])
                   .sort((a, b) => (a.relationship.marriage_order || 1) - (b.relationship.marriage_order || 1));
 
                 const spouseSpacing = 150;
                 const elements = [];
+                // Use nodeIdx in keys to avoid duplicates for reference nodes
+                const keyPrefix = isRef ? `ref-${nodeIdx}` : `person-${person.id}`;
 
                 // Main person node
                 elements.push(
                   <SvgPersonNode
-                    key={`person-${person.id}`}
+                    key={keyPrefix}
                     x={node.x}
                     y={node.y}
                     person={person}
@@ -420,7 +423,7 @@ export default function TreeCanvas({
                     // Depth boundary: show "⋯" to indicate more generations exist
                     elements.push(
                       <g
-                        key={`depth-boundary-${person.id}`}
+                        key={`depth-boundary-${keyPrefix}`}
                         transform={`translate(${node.x}, ${btnY})`}
                       >
                         <circle
@@ -445,7 +448,7 @@ export default function TreeCanvas({
                     // Normal collapse/expand button
                     elements.push(
                       <g
-                        key={`collapse-${person.id}`}
+                        key={`collapse-${keyPrefix}`}
                         transform={`translate(${node.x}, ${btnY})`}
                         onClick={(e) => { e.stopPropagation(); toggleCollapse(person.id); }}
                         style={{ cursor: 'pointer' }}
@@ -481,7 +484,7 @@ export default function TreeCanvas({
                   const lineEndX = spouseX + 67;   // edge of spouse node
                   elements.push(
                     <line
-                      key={`conn-${person.id}-${sp.spouse.id}`}
+                      key={`conn-${keyPrefix}-${sp.spouse.id}`}
                       x1={lineStartX}
                       y1={spouseY}
                       x2={lineEndX}
@@ -504,7 +507,7 @@ export default function TreeCanvas({
                   );
                 });
 
-                return <g key={`nodegroup-${node.data.id}`}>{elements}</g>;
+                return <g key={`nodegroup-${keyPrefix}`}>{elements}</g>;
               })}
             </g>
           </svg>
